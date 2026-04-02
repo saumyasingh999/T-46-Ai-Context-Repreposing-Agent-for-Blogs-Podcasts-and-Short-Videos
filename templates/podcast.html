@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Podcast — ContentAI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>🎙️ Podcast / Audio</h1>
+  <p>Upload an audio file to transcribe, summarize, and generate all content outputs.</p>
+</div>
+
+<form method="POST" action="/podcast" enctype="multipart/form-data">
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Upload Audio</div>
+    <div class="upload-zone">
+      <input type="file" name="audio_file" accept=".wav,.mp3,.ogg,.m4a" required />
+      <div class="upload-icon">🎵</div>
+      <div class="upload-text">Drop audio file here or click to browse</div>
+      <div class="upload-sub">WAV · MP3 · OGG · M4A &nbsp;·&nbsp; Max 50MB</div>
+      <div class="upload-name"></div>
+    </div>
+    <p style="font-size:0.78rem;color:var(--text3);margin-top:10px;">
+      Powered by OpenAI Whisper — works with any audio format. No model download needed.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Audio Language</div>
+    <div class="form-group">
+      <label for="lang">Select the language spoken in the audio</label>
+      <select id="lang" name="language" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.87rem;font-family:inherit;">
+        <option value="auto">🌐 Auto-detect</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
+        <option value="ur">🇵🇰 Urdu (اردو)</option>
+        <option value="ar">🇸🇦 Arabic (العربية)</option>
+        <option value="fr">🇫🇷 French (Français)</option>
+        <option value="de">🇩🇪 German (Deutsch)</option>
+        <option value="es">🇪🇸 Spanish (Español)</option>
+        <option value="pt">🇧🇷 Portuguese (Português)</option>
+        <option value="ru">🇷🇺 Russian (Русский)</option>
+        <option value="zh">🇨🇳 Chinese (中文)</option>
+        <option value="ja">🇯🇵 Japanese (日本語)</option>
+        <option value="ko">🇰🇷 Korean (한국어)</option>
+        <option value="it">🇮🇹 Italian (Italiano)</option>
+        <option value="tr">🇹🇷 Turkish (Türkçe)</option>
+        <option value="bn">🇧🇩 Bengali (বাংলা)</option>
+        <option value="pa">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
+        <option value="gu">🇮🇳 Gujarati (ગુજરાતી)</option>
+        <option value="mr">🇮🇳 Marathi (मराठी)</option>
+        <option value="ta">🇮🇳 Tamil (தமிழ்)</option>
+        <option value="te">🇮🇳 Telugu (తెలుగు)</option>
+      </select>
+    </div>
+    <p style="font-size:0.76rem;color:var(--text3);margin-top:4px;">Specifying the language improves transcription accuracy.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Output Tone</div>
+    <div class="tone-group">
+      <div class="tone-option">
+        <input type="radio" name="tone" id="t1" value="professional" checked />
+        <label for="t1"><span class="tone-icon">💼</span><span class="tone-name">Professional</span>Formal &amp; polished</label>
+      </div>
+      <div class="tone-option">
+        <input type="radio" name="tone" id="t2" value="casual" />
+        <label for="t2"><span class="tone-icon">🔥</span><span class="tone-name">Casual</span>Engaging &amp; fun</label>
+      </div>
+      <div class="tone-option">
+        <input type="radio" name="tone" id="t3" value="educational" />
+        <label for="t3"><span class="tone-icon">📚</span><span class="tone-name">Educational</span>Clear &amp; informative</label>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.25rem;">
+    <button type="submit" class="btn btn-primary btn-full">
+      <div class="spinner"></div>
+      <span class="btn-text">🎙️ Transcribe &amp; Generate</span>
+    </button>
+    <p style="text-align:center;font-size:0.76rem;color:var(--text3);margin-top:8px;">Allow up to 2 minutes for longer audio</p>
+  </div>
+</form>
+
+<!-- Whisper Info -->
+<div class="card" style="margin-top:1.5rem;">
+  <div class="card-title"><span class="dot"></span> How it works</div>
+  <div style="display:flex;flex-direction:column;gap:10px;">
+    <div style="padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;">
+      <div style="font-size:0.83rem;font-weight:600;margin-bottom:3px;">🤖 Powered by OpenAI Whisper</div>
+      <div style="font-size:0.78rem;color:var(--text2);">Runs fully offline — no API key required. Supports WAV, MP3, OGG, M4A.</div>
+    </div>
+    <div style="padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;">
+      <div style="font-size:0.83rem;font-weight:600;margin-bottom:3px;">⏱️ Processing time</div>
+      <div style="font-size:0.78rem;color:var(--text2);">First run downloads the Whisper base model (~140MB). Subsequent runs are faster.</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

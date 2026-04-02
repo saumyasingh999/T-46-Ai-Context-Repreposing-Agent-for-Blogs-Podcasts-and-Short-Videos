@@ -1,0 +1,122 @@
+﻿{% extends "base.html" %}
+{% block title %}Quick Tools — ContentAI{% endblock %}
+
+{% block extra_head %}
+<style>
+  .tool-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .tool-nav a { padding: 8px 16px; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); border-radius: 8px; font-size: 0.82rem; font-weight: 500; text-decoration: none; transition: all 0.15s; }
+  .tool-nav a:hover { background: var(--border); color: var(--text); }
+  .tool-nav a.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border-color: transparent; }
+  .kw-pill { display: inline-flex; padding: 5px 13px; background: rgba(124,106,247,0.09); border: 1px solid rgba(124,106,247,0.22); border-radius: 999px; font-size: 0.78rem; font-weight: 500; color: #a78bfa; margin: 3px; cursor: pointer; }
+  .kw-pill:hover { background: rgba(124,106,247,0.2); }
+  .title-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 7px; font-size: 0.87rem; }
+  .thread-tweet { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; padding: 12px 14px; margin-bottom: 8px; position: relative; }
+  .tweet-num { font-size: 0.68rem; color: var(--text3); font-weight: 700; margin-bottom: 5px; }
+  .ht-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .ht-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; }
+  .ht-plat { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; }
+  .ht-tags { font-size: 0.8rem; color: #a78bfa; line-height: 1.8; word-break: break-word; }
+  @media (max-width: 640px) { .ht-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Quick Tools</h1>
+  <p>Run any individual AI tool on text — no saving required.</p>
+</div>
+
+<div class="tool-nav">
+  <a href="/tools?tool=summarize" {% if active_tool=='summarize' %}class="active"{% endif %}>Summarize</a>
+  <a href="/tools?tool=keywords"  {% if active_tool=='keywords'  %}class="active"{% endif %}>Keywords</a>
+  <a href="/tools?tool=hashtags"  {% if active_tool=='hashtags'  %}class="active"{% endif %}>Hashtags</a>
+  <a href="/tools?tool=titles"    {% if active_tool=='titles'    %}class="active"{% endif %}>Titles</a>
+  <a href="/tools?tool=thread"    {% if active_tool=='thread'    %}class="active"{% endif %}>Thread</a>
+  <a href="/tools?tool=linkedin"  {% if active_tool=='linkedin'  %}class="active"{% endif %}>Blog to LinkedIn</a>
+</div>
+
+<div class="card">
+  <form method="POST" action="/tools">
+    <input type="hidden" name="tool" value="{{ active_tool }}" />
+    <div class="form-group">
+      <label for="text">Your Text</label>
+      <textarea id="text" name="text" rows="8" placeholder="Paste your text here (minimum 30 characters)...">{{ result.text if result else '' }}</textarea>
+    </div>
+    {% if active_tool in ['thread','linkedin'] %}
+    <div class="form-group">
+      <label>Tone</label>
+      <div class="tone-group">
+        <div class="tone-option"><input type="radio" name="tone" id="t1" value="professional" checked /><label for="t1"><span class="tone-icon">💼</span><span class="tone-name">Professional</span></label></div>
+        <div class="tone-option"><input type="radio" name="tone" id="t2" value="casual" /><label for="t2"><span class="tone-icon">🔥</span><span class="tone-name">Casual</span></label></div>
+        <div class="tone-option"><input type="radio" name="tone" id="t3" value="educational" /><label for="t3"><span class="tone-icon">📚</span><span class="tone-name">Educational</span></label></div>
+      </div>
+    </div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary btn-full">
+      <div class="spinner"></div>
+      <span class="btn-text">Run Tool</span>
+    </button>
+  </form>
+</div>
+
+{% if result %}
+<div class="card" style="margin-top:1.25rem;">
+  <div class="card-title"><span class="dot"></span> Output</div>
+
+  {% if active_tool=='summarize' %}
+    <div class="output-block">
+      <div class="output-label">Summary <button class="copy-btn" onclick="copyText('out',this)">Copy</button></div>
+      <div class="output-text" id="out">{{ result.output }}</div>
+    </div>
+
+  {% elif active_tool=='keywords' %}
+    <div style="margin-bottom:1rem;">
+      {% for kw in result.output %}<span class="kw-pill" onclick="copyRaw('{{ kw }}',this)">{{ kw }}</span>{% endfor %}
+    </div>
+    <div class="output-block">
+      <div class="output-label">Hashtags <button class="copy-btn" onclick="copyText('hashOut',this)">Copy</button></div>
+      <div class="output-text" id="hashOut">{% for h in result.hashtags %}{{ h }} {% endfor %}</div>
+    </div>
+
+  {% elif active_tool=='hashtags' %}
+    <div class="ht-grid">
+      {% for platform, tags in result.output.items() %}
+      <div class="ht-card">
+        <div class="ht-plat">{{ platform | capitalize }}<button class="copy-btn" onclick="copyRaw(this.closest('.ht-card').querySelector('.ht-tags').innerText,this)">Copy</button></div>
+        <div class="ht-tags">{{ tags }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% elif active_tool=='titles' %}
+    {% for title in result.output %}
+    <div class="title-item">
+      <span>{{ loop.index }}. {{ title }}</span>
+      <button class="copy-btn" onclick="this.previousElementSibling.innerText.slice(3)|0; copyRaw(this.previousElementSibling.innerText.replace(/^\d+\.\s*/,''),this)">Copy</button>
+    </div>
+    {% endfor %}
+
+  {% elif active_tool=='thread' %}
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">{{ result.output|length }} tweets</p>
+    {% for tweet in result.output %}
+    <div class="thread-tweet">
+      <div class="tweet-num">Tweet {{ loop.index }} / {{ result.output|length }}</div>
+      <div style="font-size:0.87rem;line-height:1.65;padding-right:40px;">{{ tweet }}</div>
+      <button class="copy-btn" onclick="copyRaw(this.previousElementSibling.innerText,this)" style="position:absolute;top:10px;right:10px;">Copy</button>
+    </div>
+    {% endfor %}
+    <div class="output-block" style="margin-top:0.75rem;">
+      <div class="output-label">Full Thread <button class="copy-btn" onclick="copyText('threadAll',this)">Copy All</button></div>
+      <div class="output-text" id="threadAll">{{ result.thread_preview }}</div>
+    </div>
+
+  {% elif active_tool=='linkedin' %}
+    <div class="output-block">
+      <div class="output-label">LinkedIn Post <button class="copy-btn" onclick="copyText('liOut',this)">Copy</button></div>
+      <div class="output-text" id="liOut">{{ result.output }}</div>
+    </div>
+  {% endif %}
+
+</div>
+{% endif %}
+{% endblock %}

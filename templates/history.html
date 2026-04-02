@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}History — ContentAI{% endblock %}
+
+{% block extra_head %}
+<style>
+  .history-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .history-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 0.2s, transform 0.18s, box-shadow 0.18s;
+  }
+
+  .history-card:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+    box-shadow: -3px 0 0 0 var(--accent);
+  }
+
+  .history-type-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+
+  .history-content { flex: 1; min-width: 0; }
+
+  .history-preview {
+    font-size: 0.88rem;
+    color: var(--text);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 5px;
+  }
+
+  .history-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .history-meta span {
+    font-size: 0.76rem;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .history-arrow {
+    color: var(--text3);
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  .history-card:hover .history-arrow { color: var(--accent); }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+  .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+  .empty-state h3 { font-size: 1.1rem; margin-bottom: 6px; }
+  .empty-state p  { color: var(--text2); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+  .page-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .count-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    color: var(--text2);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>📂 Processing History</h1>
+  <p>Your 20 most recent content generations.</p>
+</div>
+
+<div class="page-actions">
+  <span class="count-badge">{{ results | length }} record{{ 's' if results | length != 1 }}</span>
+  <div style="display:flex;gap:10px;">
+    <a href="/blog"    class="btn btn-secondary" style="padding:8px 18px;font-size:0.85rem;">📝 New Blog</a>
+    <a href="/podcast" class="btn btn-secondary" style="padding:8px 18px;font-size:0.85rem;">🎙️ New Podcast</a>
+  </div>
+</div>
+
+{% if results %}
+  <div class="history-grid">
+    {% for r in results %}
+    <a href="/result/{{ r.id }}" class="history-card">
+
+      <div class="history-type-icon">
+        {% if r.input_type == 'blog' %}📝
+        {% elif r.input_type == 'youtube' %}▶
+        {% else %}🎙️{% endif %}
+      </div>
+
+      <div class="history-content">
+        <div class="history-preview">
+          {{ r.input_preview if r.input_preview else 'No preview available' }}
+        </div>
+        <div class="history-meta">
+          <span>
+            {% if r.input_type == 'blog' %}📝 Blog
+            {% elif r.input_type == 'youtube' %}▶ YouTube
+            {% else %}🎙️ Podcast{% endif %}
+          </span>
+          <span>🎨 {{ r.tone | capitalize if r.tone else 'Professional' }}</span>
+          <span>🕒 {{ r.created_at }}</span>
+          <span class="badge badge-purple" style="font-size:0.72rem;padding:3px 8px;">ID #{{ r.id }}</span>
+        </div>
+      </div>
+
+      <div class="history-arrow">→</div>
+    </a>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="card">
+    <div class="empty-state">
+      <div class="empty-icon">🗂️</div>
+      <h3>No history yet</h3>
+      <p>Process a blog post or podcast to see your results here.</p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <a href="/blog"    class="btn btn-primary">📝 Process Blog</a>
+        <a href="/podcast" class="btn btn-secondary">🎙️ Upload Podcast</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% endblock %}

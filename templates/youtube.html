@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}YouTube — ContentAI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>▶ YouTube to Text</h1>
+  <p>Paste a YouTube link — extracts captions or transcribes audio, then generates all content outputs.</p>
+</div>
+
+<form method="POST" action="/youtube">
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> YouTube URL</div>
+    <div class="form-group">
+      <label for="yt_url">Video Link</label>
+      <input type="url" id="yt_url" name="yt_url" placeholder="https://www.youtube.com/watch?v=..." required />
+    </div>
+    <p style="font-size:0.78rem;color:var(--text3);">
+      Works with regular videos, Shorts, and videos with auto-generated captions.
+      Requires <code style="color:#a78bfa;font-family:monospace;">pip install yt-dlp</code>.
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Video Language</div>
+    <div class="form-group">
+      <label for="lang">Select the language spoken in the video</label>
+      <select id="lang" name="language" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.87rem;font-family:inherit;">
+        <option value="auto">🌐 Auto-detect</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
+        <option value="ur">🇵🇰 Urdu (اردو)</option>
+        <option value="ar">🇸🇦 Arabic (العربية)</option>
+        <option value="fr">🇫🇷 French (Français)</option>
+        <option value="de">🇩🇪 German (Deutsch)</option>
+        <option value="es">🇪🇸 Spanish (Español)</option>
+        <option value="pt">🇧🇷 Portuguese (Português)</option>
+        <option value="ru">🇷🇺 Russian (Русский)</option>
+        <option value="zh">🇨🇳 Chinese (中文)</option>
+        <option value="ja">🇯🇵 Japanese (日本語)</option>
+        <option value="ko">🇰🇷 Korean (한국어)</option>
+        <option value="it">🇮🇹 Italian (Italiano)</option>
+        <option value="tr">🇹🇷 Turkish (Türkçe)</option>
+        <option value="bn">🇧🇩 Bengali (বাংলা)</option>
+        <option value="pa">🇮🇳 Punjabi (ਪੰਜਾਬੀ)</option>
+        <option value="gu">🇮🇳 Gujarati (ગુજરાતી)</option>
+        <option value="mr">🇮🇳 Marathi (मराठी)</option>
+        <option value="ta">🇮🇳 Tamil (தமிழ்)</option>
+        <option value="te">🇮🇳 Telugu (తెలుగు)</option>
+      </select>
+    </div>
+    <p style="font-size:0.76rem;color:var(--text3);margin-top:4px;">Specifying the language improves transcription accuracy.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Output Tone</div>
+    <div class="tone-group">
+      <div class="tone-option">
+        <input type="radio" name="tone" id="t1" value="professional" checked />
+        <label for="t1"><span class="tone-icon">💼</span><span class="tone-name">Professional</span>Formal &amp; polished</label>
+      </div>
+      <div class="tone-option">
+        <input type="radio" name="tone" id="t2" value="casual" />
+        <label for="t2"><span class="tone-icon">🔥</span><span class="tone-name">Casual</span>Engaging &amp; fun</label>
+      </div>
+      <div class="tone-option">
+        <input type="radio" name="tone" id="t3" value="educational" />
+        <label for="t3"><span class="tone-icon">📚</span><span class="tone-name">Educational</span>Clear &amp; informative</label>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:1.25rem;">
+    <button type="submit" class="btn btn-primary btn-full">
+      <div class="spinner"></div>
+      <span class="btn-text">▶ Extract &amp; Generate</span>
+    </button>
+    <p style="text-align:center;font-size:0.76rem;color:var(--text3);margin-top:8px;">Caption extraction is fast · Audio transcription may take 1–2 min</p>
+  </div>
+</form>
+{% endblock %}

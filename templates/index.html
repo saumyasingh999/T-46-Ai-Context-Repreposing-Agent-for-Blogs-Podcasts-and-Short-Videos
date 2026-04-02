@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}ContentAI — AI Content Repurposer{% endblock %}
+
+{% block extra_head %}
+<style>
+  .hero { text-align: center; padding: 3.5rem 0 2.5rem; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(124,106,247,0.12); border: 1px solid rgba(124,106,247,0.28);
+    color: #a78bfa; padding: 5px 14px; border-radius: 999px;
+    font-size: 0.76rem; font-weight: 600; margin-bottom: 1.2rem;
+  }
+  .hero h1 {
+    font-size: 2.8rem; font-weight: 800; line-height: 1.15; margin-bottom: 1rem;
+    background: linear-gradient(135deg, #e2e4ed 40%, #7c6af7);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero p { font-size: 1rem; color: var(--text2); max-width: 480px; margin: 0 auto 2rem; }
+  .hero-cta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  /* Input cards grid */
+  .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 2.5rem 0; }
+  .input-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 1.5rem 1.25rem; text-decoration: none; color: var(--text);
+    transition: border-color 0.18s, transform 0.18s;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .input-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .input-card .ic-icon { font-size: 1.8rem; }
+  .input-card .ic-title { font-weight: 700; font-size: 0.95rem; }
+  .input-card .ic-desc  { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+  .input-card .ic-arrow { font-size: 0.8rem; color: var(--accent); margin-top: auto; padding-top: 6px; }
+
+  /* Output features */
+  .output-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; margin: 2rem 0; }
+  .output-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 1rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  }
+  .output-item .oi-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+  .output-item .oi-title { font-weight: 600; font-size: 0.88rem; margin-bottom: 2px; }
+  .output-item .oi-desc  { font-size: 0.78rem; color: var(--text2); line-height: 1.45; }
+
+  /* Stats */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; margin-top: 2rem; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; text-align: center; }
+  .stat-num { font-size: 1.7rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stat-lbl { font-size: 0.76rem; color: var(--text2); margin-top: 3px; }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.9rem; }
+    .input-grid { grid-template-columns: 1fr; }
+    .output-grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div class="hero-badge">✦ Offline · No API Keys Required</div>
+  <h1>Create Once,<br/>Publish Everywhere</h1>
+  <p>Transform blogs, podcasts, and YouTube videos into summaries, scripts, social posts, threads, and more — automatically.</p>
+  <div class="hero-cta">
+    <a href="/blog"    class="btn btn-primary">📝 Blog</a>
+    <a href="/podcast" class="btn btn-secondary">🎙️ Podcast</a>
+    <a href="/youtube" class="btn btn-secondary">▶ YouTube</a>
+    <a href="/tools"   class="btn btn-secondary">⚡ Quick Tools</a>
+  </div>
+</div>
+
+<!-- Input Sources -->
+<div class="card">
+  <div class="card-title"><span class="dot"></span> Choose Your Input</div>
+  <div class="input-grid">
+    <a href="/blog" class="input-card">
+      <div class="ic-icon">📝</div>
+      <div class="ic-title">Blog Post</div>
+      <div class="ic-desc">Paste text or a URL. Scrapes and processes any article automatically.</div>
+      <div class="ic-arrow">Process Blog →</div>
+    </a>
+    <a href="/podcast" class="input-card">
+      <div class="ic-icon">🎙️</div>
+      <div class="ic-title">Podcast / Audio</div>
+      <div class="ic-desc">Upload WAV, MP3, OGG or M4A. Transcribed offline using Vosk.</div>
+      <div class="ic-arrow">Upload Audio →</div>
+    </a>
+    <a href="/youtube" class="input-card">
+      <div class="ic-icon">▶</div>
+      <div class="ic-title">YouTube Video</div>
+      <div class="ic-desc">Paste any YouTube link. Extracts captions or transcribes audio.</div>
+      <div class="ic-arrow">Paste Link →</div>
+    </a>
+  </div>
+</div>
+
+<!-- Outputs -->
+<div class="card" style="margin-top:1.25rem;">
+  <div class="card-title"><span class="dot"></span> What You Get</div>
+  <div class="output-grid">
+    <div class="output-item">
+      <div class="oi-icon">✦</div>
+      <div><div class="oi-title">Text Summarization</div><div class="oi-desc">TF-IDF extractive summary of any content, length-aware.</div></div>
+    </div>
+    <div class="output-item">
+      <div class="oi-icon">🎬</div>
+      <div><div class="oi-title">Video Script</div><div class="oi-desc">30–60 sec script with Hook, Main Idea, Example, and CTA.</div></div>
+    </div>
+    <div class="output-item">
+      <div class="oi-icon">🏷️</div>
+      <div><div class="oi-title">Keyword Extraction</div><div class="oi-desc">Top keywords via TF-IDF for SEO and content tagging.</div></div>
+    </div>
+    <div class="output-item">
+      <div class="oi-icon">📣</div>
+      <div><div class="oi-title">Hashtag Generator</div><div class="oi-desc">Platform-specific sets for Instagram, Twitter, LinkedIn, YouTube, TikTok.</div></div>
+    </div>
+    <div class="output-item">
+      <div class="oi-icon">✍️</div>
+      <div><div class="oi-title">Title Generator</div><div class="oi-desc">10 title ideas — listicles, how-tos, questions, SEO, power titles.</div></div>
+    </div>
+    <div class="output-item">
+      <div class="oi-icon">🧵</div>
+      <div><div class="oi-title">Twitter Thread Splitter</div><div class="oi-desc">Auto-splits content into a numbered, ready-to-post thread.</div></div>
+    </div>
+    <div class="output-item">
+      <div class="oi-icon">💼</div>
+      <div><div class="oi-title">Blog → LinkedIn</div><div class="oi-desc">Converts blog posts into LinkedIn-optimized long-form posts.</div></div>
+    </div>
+    <div class="output-item">
+      <div class="oi-icon">📱</div>
+      <div><div class="oi-title">Social Posts</div><div class="oi-desc">Ready-to-post content for Twitter/X, Instagram, and LinkedIn.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-num">8+</div><div class="stat-lbl">AI outputs per input</div></div>
+  <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Input sources</div></div>
+  <div class="stat-card"><div class="stat-num">5</div><div class="stat-lbl">Platforms supported</div></div>
+  <div class="stat-card"><div class="stat-num">100%</div><div class="stat-lbl">Offline, no API keys</div></div>
+</div>
+{% endblock %}

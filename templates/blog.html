@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Blog — ContentAI{% endblock %}
+
+{% block extra_head %}
+<style>
+  .char-count { font-size: 0.75rem; color: var(--text3); text-align: right; margin-top: 4px; }
+  .char-count.warn { color: var(--amber); }
+  .char-count.ok   { color: var(--green); }
+  .output-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>📝 Blog Repurposing</h1>
+  <p>Paste your blog text or a URL — get summaries, scripts, social posts, hashtags, titles, and more.</p>
+</div>
+
+<form method="POST" action="/blog">
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Content Input</div>
+
+    <div class="form-group">
+      <label for="blog_url">🌐 Blog URL (optional — auto-fetches article text)</label>
+      <input type="url" name="blog_url" id="blog_url" placeholder="https://example.com/your-blog-post" value="{{ request.form.get('blog_url', '') }}" />
+    </div>
+
+    <div class="form-divider">— or paste text directly —</div>
+
+    <div class="form-group">
+      <label for="blog_text">📄 Blog Text</label>
+      <textarea name="blog_text" id="blog_text" rows="10"
+        placeholder="Paste your full blog post here (minimum 50 characters)...">{{ request.form.get('blog_text', '') }}</textarea>
+      <div class="char-count" id="charCount">0 characters</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Output Tone</div>
+    <div class="tone-group">
+      <div class="tone-option">
+        <input type="radio" name="tone" id="t1" value="professional" checked />
+        <label for="t1"><span class="tone-icon">💼</span><span class="tone-name">Professional</span>Formal &amp; polished</label>
+      </div>
+      <div class="tone-option">
+        <input type="radio" name="tone" id="t2" value="casual" />
+        <label for="t2"><span class="tone-icon">🔥</span><span class="tone-name">Casual</span>Engaging &amp; fun</label>
+      </div>
+      <div class="tone-option">
+        <input type="radio" name="tone" id="t3" value="educational" />
+        <label for="t3"><span class="tone-icon">📚</span><span class="tone-name">Educational</span>Clear &amp; informative</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> You'll Receive</div>
+    <div class="output-badges">
+      <span class="badge badge-purple">✦ Summary</span>
+      <span class="badge badge-purple">💡 Highlights</span>
+      <span class="badge badge-green">🎬 Video Script</span>
+      <span class="badge badge-green">🧵 Twitter Thread</span>
+      <span class="badge badge-green">📱 Social Posts</span>
+      <span class="badge badge-amber">💼 LinkedIn Post</span>
+      <span class="badge badge-amber">✍️ Title Ideas</span>
+      <span class="badge badge-amber">📣 Hashtags</span>
+      <span class="badge badge-purple">🏷️ Keywords</span>
+    </div>
+  </div>
+
+  <div style="margin-top:1.25rem;">
+    <button type="submit" class="btn btn-primary btn-full">
+      <div class="spinner"></div>
+      <span class="btn-text">✦ Generate All Content</span>
+    </button>
+    <p style="text-align:center;font-size:0.76rem;color:var(--text3);margin-top:8px;">Processing takes 10–30 seconds</p>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const ta = document.getElementById('blog_text');
+  const cc = document.getElementById('charCount');
+  function upd() {
+    const n = ta.value.length;
+    cc.textContent = n + ' characters';
+    cc.className = 'char-count ' + (n < 50 ? '' : n < 200 ? 'warn' : 'ok');
+  }
+  ta.addEventListener('input', upd); upd();
+</script>
+{% endblock %}
