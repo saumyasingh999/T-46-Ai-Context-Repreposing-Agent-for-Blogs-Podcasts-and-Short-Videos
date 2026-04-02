@@ -1,144 +1,90 @@
-{% extends "base.html" %}
-{% block title %}ContentAI — AI Content Repurposer{% endblock %}
-
+﻿{% extends "base.html" %}
+{% block title %}ContentAI{% endblock %}
 {% block extra_head %}
 <style>
-  .hero { text-align: center; padding: 3.5rem 0 2.5rem; }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(124,106,247,0.12); border: 1px solid rgba(124,106,247,0.28);
-    color: #a78bfa; padding: 5px 14px; border-radius: 999px;
-    font-size: 0.76rem; font-weight: 600; margin-bottom: 1.2rem;
-  }
-  .hero h1 {
-    font-size: 2.8rem; font-weight: 800; line-height: 1.15; margin-bottom: 1rem;
-    background: linear-gradient(135deg, #e2e4ed 40%, #7c6af7);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-  .hero p { font-size: 1rem; color: var(--text2); max-width: 480px; margin: 0 auto 2rem; }
-  .hero-cta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-
-  /* Input cards grid */
-  .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 2.5rem 0; }
-  .input-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 1.5rem 1.25rem; text-decoration: none; color: var(--text);
-    transition: border-color 0.18s, transform 0.18s;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .input-card:hover { border-color: var(--accent); transform: translateY(-3px); }
-  .input-card .ic-icon { font-size: 1.8rem; }
-  .input-card .ic-title { font-weight: 700; font-size: 0.95rem; }
-  .input-card .ic-desc  { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
-  .input-card .ic-arrow { font-size: 0.8rem; color: var(--accent); margin-top: auto; padding-top: 6px; }
-
-  /* Output features */
-  .output-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; margin: 2rem 0; }
-  .output-item {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 1rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-  }
-  .output-item .oi-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
-  .output-item .oi-title { font-weight: 600; font-size: 0.88rem; margin-bottom: 2px; }
-  .output-item .oi-desc  { font-size: 0.78rem; color: var(--text2); line-height: 1.45; }
-
-  /* Stats */
-  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; margin-top: 2rem; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; text-align: center; }
-  .stat-num { font-size: 1.7rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .stat-lbl { font-size: 0.76rem; color: var(--text2); margin-top: 3px; }
-
-  @media (max-width: 640px) {
-    .hero h1 { font-size: 1.9rem; }
-    .input-grid { grid-template-columns: 1fr; }
-    .output-grid { grid-template-columns: 1fr; }
-    .stats-row { grid-template-columns: repeat(2, 1fr); }
-  }
+.hero{text-align:center;padding:3.5rem 0 3rem}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.1));border:1px solid rgba(124,58,237,.25);color:var(--accent);padding:5px 14px;border-radius:999px;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:1.4rem;animation:fadeUp .5s ease both}
+.hero h1{font-size:clamp(2.2rem,4.5vw,3.4rem);font-weight:800;line-height:1.1;margin-bottom:1.1rem;letter-spacing:-.04em;background:linear-gradient(135deg,var(--text) 0%,var(--accent) 50%,var(--accent2) 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 5s ease infinite,fadeUp .5s .1s ease both}
+.hero p{font-size:1.05rem;color:var(--text2);max-width:480px;margin:0 auto 2.25rem;line-height:1.75;animation:fadeUp .5s .2s ease both}
+.hero-cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;animation:fadeUp .5s .3s ease both}
+.section-title{font-size:1.2rem;font-weight:800;color:var(--text);margin-bottom:.3rem;letter-spacing:-.02em}
+.section-sub{font-size:.85rem;color:var(--text2);margin-bottom:1.4rem}
+.input-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.25rem}
+.input-card{display:flex;flex-direction:column;text-decoration:none;color:var(--text);background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;transition:all .25s;box-shadow:var(--shadow);animation:fadeUp .5s ease both}
+.input-card:nth-child(2){animation-delay:.08s}
+.input-card:nth-child(3){animation-delay:.16s}
+.input-card:hover{border-color:var(--accent);transform:translateY(-5px);box-shadow:var(--shadow-lg);text-decoration:none;color:var(--text)}
+.ic-top{padding:1.25rem 1.25rem .9rem;background:linear-gradient(135deg,rgba(124,58,237,.07),rgba(168,85,247,.03));border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
+.ic-icon-wrap{width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.ic-icon-wrap.purple{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(168,85,247,.08))}
+.ic-icon-wrap.teal{background:linear-gradient(135deg,rgba(6,182,212,.15),rgba(14,165,233,.08))}
+.ic-icon-wrap.pink{background:linear-gradient(135deg,rgba(236,72,153,.15),rgba(244,114,182,.08))}
+.ic-title{font-weight:700;font-size:.95rem;color:var(--text)}
+.ic-badge{font-size:.63rem;font-weight:600;color:var(--accent);background:rgba(124,58,237,.1);padding:2px 7px;border-radius:999px;margin-top:3px;display:inline-block}
+.ic-body{padding:.9rem 1.25rem 1.25rem;flex:1;display:flex;flex-direction:column;gap:6px}
+.ic-desc{font-size:.8rem;color:var(--text2);line-height:1.6;flex:1}
+.ic-arrow{display:inline-flex;align-items:center;gap:4px;font-size:.78rem;color:var(--accent);font-weight:600;margin-top:4px}
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin-top:1.25rem}
+.feature-item{display:flex;align-items:flex-start;gap:11px;padding:.95rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:11px;transition:all .22s;box-shadow:0 1px 3px rgba(124,58,237,.04)}
+.feature-item:hover{border-color:rgba(124,58,237,.3);transform:translateY(-2px);box-shadow:var(--shadow)}
+.fi-icon{width:34px;height:34px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06))}
+.fi-title{font-weight:600;font-size:.86rem;color:var(--text);margin-bottom:2px}
+.fi-desc{font-size:.75rem;color:var(--text2);line-height:1.5}
+.cta-banner{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:16px;padding:2rem 2.25rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin-top:1.25rem;box-shadow:0 8px 32px rgba(124,58,237,.3);position:relative;overflow:hidden;animation:fadeUp .5s .2s ease both}
+.cta-banner::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.07)}
+.cta-text h3{font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:.3rem}
+.cta-text p{font-size:.85rem;color:rgba(255,255,255,.8);line-height:1.5}
+.cta-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:10px;background:#fff;color:var(--accent);font-weight:700;font-size:.9rem;text-decoration:none;white-space:nowrap;transition:all .2s;flex-shrink:0;position:relative;z-index:1;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.2)}
+@media(max-width:640px){.input-grid{grid-template-columns:1fr}.feature-grid{grid-template-columns:1fr}.cta-banner{flex-direction:column;text-align:center}}
 </style>
 {% endblock %}
-
 {% block content %}
 <div class="hero">
-  <div class="hero-badge">✦ Offline · No API Keys Required</div>
+  <div class="hero-eyebrow">AI-Powered Content Agent</div>
   <h1>Create Once,<br/>Publish Everywhere</h1>
-  <p>Transform blogs, podcasts, and YouTube videos into summaries, scripts, social posts, threads, and more — automatically.</p>
+  <p>Transform blogs, podcasts, and YouTube videos into summaries, scripts, social posts, threads, and more.</p>
   <div class="hero-cta">
-    <a href="/blog"    class="btn btn-primary">📝 Blog</a>
-    <a href="/podcast" class="btn btn-secondary">🎙️ Podcast</a>
-    <a href="/youtube" class="btn btn-secondary">▶ YouTube</a>
-    <a href="/tools"   class="btn btn-secondary">⚡ Quick Tools</a>
+    <a href="/blog"    class="btn btn-primary">Blog</a>
+    <a href="/podcast" class="btn btn-secondary">Podcast</a>
+    <a href="/youtube" class="btn btn-secondary">YouTube</a>
+    <a href="/tools"   class="btn btn-secondary">Quick Tools</a>
   </div>
 </div>
-
-<!-- Input Sources -->
 <div class="card">
-  <div class="card-title"><span class="dot"></span> Choose Your Input</div>
+  <div class="section-title">Choose Your Input</div>
+  <div class="section-sub">Pick a source and we handle the rest.</div>
   <div class="input-grid">
     <a href="/blog" class="input-card">
-      <div class="ic-icon">📝</div>
-      <div class="ic-title">Blog Post</div>
-      <div class="ic-desc">Paste text or a URL. Scrapes and processes any article automatically.</div>
-      <div class="ic-arrow">Process Blog →</div>
+      <div class="ic-top"><div class="ic-icon-wrap purple">Blog</div><div><div class="ic-title">Blog Post</div><span class="ic-badge">Text / URL</span></div></div>
+      <div class="ic-body"><div class="ic-desc">Paste text or a URL. Scrapes and processes any article automatically.</div><div class="ic-arrow">Process Blog</div></div>
     </a>
     <a href="/podcast" class="input-card">
-      <div class="ic-icon">🎙️</div>
-      <div class="ic-title">Podcast / Audio</div>
-      <div class="ic-desc">Upload WAV, MP3, OGG or M4A. Transcribed offline using Vosk.</div>
-      <div class="ic-arrow">Upload Audio →</div>
+      <div class="ic-top"><div class="ic-icon-wrap teal">Audio</div><div><div class="ic-title">Podcast / Audio</div><span class="ic-badge">WAV MP3 M4A</span></div></div>
+      <div class="ic-body"><div class="ic-desc">Upload an audio file. Transcribed offline using Vosk.</div><div class="ic-arrow">Upload Audio</div></div>
     </a>
     <a href="/youtube" class="input-card">
-      <div class="ic-icon">▶</div>
-      <div class="ic-title">YouTube Video</div>
-      <div class="ic-desc">Paste any YouTube link. Extracts captions or transcribes audio.</div>
-      <div class="ic-arrow">Paste Link →</div>
+      <div class="ic-top"><div class="ic-icon-wrap pink">Video</div><div><div class="ic-title">YouTube Video</div><span class="ic-badge">Any YT Link</span></div></div>
+      <div class="ic-body"><div class="ic-desc">Paste any YouTube link. Extracts captions or transcribes audio.</div><div class="ic-arrow">Paste Link</div></div>
     </a>
   </div>
 </div>
-
-<!-- Outputs -->
-<div class="card" style="margin-top:1.25rem;">
-  <div class="card-title"><span class="dot"></span> What You Get</div>
-  <div class="output-grid">
-    <div class="output-item">
-      <div class="oi-icon">✦</div>
-      <div><div class="oi-title">Text Summarization</div><div class="oi-desc">TF-IDF extractive summary of any content, length-aware.</div></div>
-    </div>
-    <div class="output-item">
-      <div class="oi-icon">🎬</div>
-      <div><div class="oi-title">Video Script</div><div class="oi-desc">30–60 sec script with Hook, Main Idea, Example, and CTA.</div></div>
-    </div>
-    <div class="output-item">
-      <div class="oi-icon">🏷️</div>
-      <div><div class="oi-title">Keyword Extraction</div><div class="oi-desc">Top keywords via TF-IDF for SEO and content tagging.</div></div>
-    </div>
-    <div class="output-item">
-      <div class="oi-icon">📣</div>
-      <div><div class="oi-title">Hashtag Generator</div><div class="oi-desc">Platform-specific sets for Instagram, Twitter, LinkedIn, YouTube, TikTok.</div></div>
-    </div>
-    <div class="output-item">
-      <div class="oi-icon">✍️</div>
-      <div><div class="oi-title">Title Generator</div><div class="oi-desc">10 title ideas — listicles, how-tos, questions, SEO, power titles.</div></div>
-    </div>
-    <div class="output-item">
-      <div class="oi-icon">🧵</div>
-      <div><div class="oi-title">Twitter Thread Splitter</div><div class="oi-desc">Auto-splits content into a numbered, ready-to-post thread.</div></div>
-    </div>
-    <div class="output-item">
-      <div class="oi-icon">💼</div>
-      <div><div class="oi-title">Blog → LinkedIn</div><div class="oi-desc">Converts blog posts into LinkedIn-optimized long-form posts.</div></div>
-    </div>
-    <div class="output-item">
-      <div class="oi-icon">📱</div>
-      <div><div class="oi-title">Social Posts</div><div class="oi-desc">Ready-to-post content for Twitter/X, Instagram, and LinkedIn.</div></div>
-    </div>
+<div class="card">
+  <div class="section-title">What You Get</div>
+  <div class="section-sub">Every input generates 8+ ready-to-use content formats instantly.</div>
+  <div class="feature-grid">
+    <div class="feature-item"><div class="fi-icon">S</div><div><div class="fi-title">Text Summarization</div><div class="fi-desc">TF-IDF extractive summary, length-aware.</div></div></div>
+    <div class="feature-item"><div class="fi-icon">V</div><div><div class="fi-title">Video Script</div><div class="fi-desc">30-60 sec script with Hook, Idea, Example, CTA.</div></div></div>
+    <div class="feature-item"><div class="fi-icon">K</div><div><div class="fi-title">Keyword Extraction</div><div class="fi-desc">Top keywords via TF-IDF for SEO and tagging.</div></div></div>
+    <div class="feature-item"><div class="fi-icon">H</div><div><div class="fi-title">Hashtag Generator</div><div class="fi-desc">Platform-specific sets for all major networks.</div></div></div>
+    <div class="feature-item"><div class="fi-icon">T</div><div><div class="fi-title">Title Generator</div><div class="fi-desc">10 title ideas for listicles, how-tos, SEO.</div></div></div>
+    <div class="feature-item"><div class="fi-icon">Tw</div><div><div class="fi-title">Twitter Thread</div><div class="fi-desc">Auto-splits content into a numbered thread.</div></div></div>
+    <div class="feature-item"><div class="fi-icon">Li</div><div><div class="fi-title">Blog to LinkedIn</div><div class="fi-desc">Converts blog posts into LinkedIn-optimized posts.</div></div></div>
+    <div class="feature-item"><div class="fi-icon">So</div><div><div class="fi-title">Social Posts</div><div class="fi-desc">Ready-to-post for Twitter, Instagram, LinkedIn.</div></div></div>
   </div>
 </div>
-
-<!-- Stats -->
-<div class="stats-row">
-  <div class="stat-card"><div class="stat-num">8+</div><div class="stat-lbl">AI outputs per input</div></div>
-  <div class="stat-card"><div class="stat-num">3</div><div class="stat-lbl">Input sources</div></div>
-  <div class="stat-card"><div class="stat-num">5</div><div class="stat-lbl">Platforms supported</div></div>
-  <div class="stat-card"><div class="stat-num">100%</div><div class="stat-lbl">Offline, no API keys</div></div>
+<div class="cta-banner">
+  <div class="cta-text"><h3>Ready to repurpose your content?</h3><p>Paste a blog URL or YouTube link and get 8+ formats in seconds.</p></div>
+  <a href="/blog" class="cta-btn">Get Started</a>
 </div>
 {% endblock %}
