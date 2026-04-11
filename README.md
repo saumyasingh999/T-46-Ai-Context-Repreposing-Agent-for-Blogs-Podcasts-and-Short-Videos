@@ -247,3 +247,5 @@ This project is developed for **academic purposes at GLA University**.
 
 ⭐ If you find this project useful, consider **starring the repository!**
 
+<h3><b>Note:</b>For run this install all dependencies that present in requirements then run these command.<br> <b>Python setup.py</b><br>Python app.py</h3>
+
