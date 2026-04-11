@@ -4,17 +4,17 @@
 {% block extra_head %}
 <style>
   .tool-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
-  .tool-nav a { padding: 8px 16px; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); border-radius: 8px; font-size: 0.82rem; font-weight: 500; text-decoration: none; transition: all 0.15s; }
-  .tool-nav a:hover { background: var(--border); color: var(--text); }
+  .tool-nav a { padding: 8px 16px; border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-secondary); border-radius: 8px; font-size: 0.82rem; font-weight: 500; text-decoration: none; transition: all 0.15s; }
+  .tool-nav a:hover { background: var(--border); color: var(--text-primary); }
   .tool-nav a.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border-color: transparent; }
   .kw-pill { display: inline-flex; padding: 5px 13px; background: rgba(124,106,247,0.09); border: 1px solid rgba(124,106,247,0.22); border-radius: 999px; font-size: 0.78rem; font-weight: 500; color: #a78bfa; margin: 3px; cursor: pointer; }
   .kw-pill:hover { background: rgba(124,106,247,0.2); }
-  .title-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 7px; font-size: 0.87rem; }
-  .thread-tweet { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; padding: 12px 14px; margin-bottom: 8px; position: relative; }
-  .tweet-num { font-size: 0.68rem; color: var(--text3); font-weight: 700; margin-bottom: 5px; }
+  .title-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 7px; font-size: 0.87rem; }
+  .thread-tweet { background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; padding: 12px 14px; margin-bottom: 8px; position: relative; }
+  .tweet-num { font-size: 0.68rem; color: var(--text-muted); font-weight: 700; margin-bottom: 5px; }
   .ht-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-  .ht-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; }
-  .ht-plat { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; }
+  .ht-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; }
+  .ht-plat { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; }
   .ht-tags { font-size: 0.8rem; color: #a78bfa; line-height: 1.8; word-break: break-word; }
   @media (max-width: 640px) { .ht-grid { grid-template-columns: 1fr; } }
 </style>
@@ -97,7 +97,7 @@
     {% endfor %}
 
   {% elif active_tool=='thread' %}
-    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">{{ result.output|length }} tweets</p>
+    <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:1rem;">{{ result.output|length }} tweets</p>
     {% for tweet in result.output %}
     <div class="thread-tweet">
       <div class="tweet-num">Tweet {{ loop.index }} / {{ result.output|length }}</div>

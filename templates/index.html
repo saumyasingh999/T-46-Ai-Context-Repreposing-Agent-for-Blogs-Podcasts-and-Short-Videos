@@ -1,90 +1,2076 @@
-﻿{% extends "base.html" %}
-{% block title %}ContentAI{% endblock %}
-{% block extra_head %}
-<style>
-.hero{text-align:center;padding:3.5rem 0 3rem}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.1));border:1px solid rgba(124,58,237,.25);color:var(--accent);padding:5px 14px;border-radius:999px;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:1.4rem;animation:fadeUp .5s ease both}
-.hero h1{font-size:clamp(2.2rem,4.5vw,3.4rem);font-weight:800;line-height:1.1;margin-bottom:1.1rem;letter-spacing:-.04em;background:linear-gradient(135deg,var(--text) 0%,var(--accent) 50%,var(--accent2) 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradShift 5s ease infinite,fadeUp .5s .1s ease both}
-.hero p{font-size:1.05rem;color:var(--text2);max-width:480px;margin:0 auto 2.25rem;line-height:1.75;animation:fadeUp .5s .2s ease both}
-.hero-cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;animation:fadeUp .5s .3s ease both}
-.section-title{font-size:1.2rem;font-weight:800;color:var(--text);margin-bottom:.3rem;letter-spacing:-.02em}
-.section-sub{font-size:.85rem;color:var(--text2);margin-bottom:1.4rem}
-.input-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.25rem}
-.input-card{display:flex;flex-direction:column;text-decoration:none;color:var(--text);background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;transition:all .25s;box-shadow:var(--shadow);animation:fadeUp .5s ease both}
-.input-card:nth-child(2){animation-delay:.08s}
-.input-card:nth-child(3){animation-delay:.16s}
-.input-card:hover{border-color:var(--accent);transform:translateY(-5px);box-shadow:var(--shadow-lg);text-decoration:none;color:var(--text)}
-.ic-top{padding:1.25rem 1.25rem .9rem;background:linear-gradient(135deg,rgba(124,58,237,.07),rgba(168,85,247,.03));border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem}
-.ic-icon-wrap{width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
-.ic-icon-wrap.purple{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(168,85,247,.08))}
-.ic-icon-wrap.teal{background:linear-gradient(135deg,rgba(6,182,212,.15),rgba(14,165,233,.08))}
-.ic-icon-wrap.pink{background:linear-gradient(135deg,rgba(236,72,153,.15),rgba(244,114,182,.08))}
-.ic-title{font-weight:700;font-size:.95rem;color:var(--text)}
-.ic-badge{font-size:.63rem;font-weight:600;color:var(--accent);background:rgba(124,58,237,.1);padding:2px 7px;border-radius:999px;margin-top:3px;display:inline-block}
-.ic-body{padding:.9rem 1.25rem 1.25rem;flex:1;display:flex;flex-direction:column;gap:6px}
-.ic-desc{font-size:.8rem;color:var(--text2);line-height:1.6;flex:1}
-.ic-arrow{display:inline-flex;align-items:center;gap:4px;font-size:.78rem;color:var(--accent);font-weight:600;margin-top:4px}
-.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin-top:1.25rem}
-.feature-item{display:flex;align-items:flex-start;gap:11px;padding:.95rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:11px;transition:all .22s;box-shadow:0 1px 3px rgba(124,58,237,.04)}
-.feature-item:hover{border-color:rgba(124,58,237,.3);transform:translateY(-2px);box-shadow:var(--shadow)}
-.fi-icon{width:34px;height:34px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(168,85,247,.06))}
-.fi-title{font-weight:600;font-size:.86rem;color:var(--text);margin-bottom:2px}
-.fi-desc{font-size:.75rem;color:var(--text2);line-height:1.5}
-.cta-banner{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:16px;padding:2rem 2.25rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin-top:1.25rem;box-shadow:0 8px 32px rgba(124,58,237,.3);position:relative;overflow:hidden;animation:fadeUp .5s .2s ease both}
-.cta-banner::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.07)}
-.cta-text h3{font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:.3rem}
-.cta-text p{font-size:.85rem;color:rgba(255,255,255,.8);line-height:1.5}
-.cta-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:10px;background:#fff;color:var(--accent);font-weight:700;font-size:.9rem;text-decoration:none;white-space:nowrap;transition:all .2s;flex-shrink:0;position:relative;z-index:1;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-.cta-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.2)}
-@media(max-width:640px){.input-grid{grid-template-columns:1fr}.feature-grid{grid-template-columns:1fr}.cta-banner{flex-direction:column;text-align:center}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContentAI - AI Content Repurposing Agent</title>
+  <meta name="description" content="Transform your content effortlessly with AI-powered text summarization, video-to-text extraction, audio transcription, and more.">
+  <style>
+/* Reset & Base Styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-primary: #0a0a0b;
+  --bg-secondary: #111113;
+  --bg-card: #16161a;
+  --bg-card-hover: #1c1c21;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent: #14b8a6;
+  --accent-light: #2dd4bf;
+  --accent-dark: #0d9488;
+  --border: #27272a;
+  --border-light: #3f3f46;
+  --gradient-start: #14b8a6;
+  --gradient-end: #06b6d4;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.btn-outline:hover {
+  background: var(--bg-card);
+  border-color: var(--accent);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover {
+  color: var(--text-primary);
+}
+
+.btn-lg {
+  padding: 16px 32px;
+  font-size: 16px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Header */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 11, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  border-radius: var(--radius-sm);
+  color: var(--bg-primary);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: var(--text-primary);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+}
+
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 72px;
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 24px;
+}
+
+.mobile-menu.active {
+  display: block;
+}
+
+.mobile-nav-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Hero Section */
+.hero {
+  position: relative;
+  padding: 160px 0 100px;
+  overflow: hidden;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.hero-title {
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 800;
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+
+.hero-description {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 80px;
+  flex-wrap: wrap;
+}
+
+.hero-features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.hero-feature-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+
+.hero-feature-card .feature-icon {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(6, 182, 212, 0.2));
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+
+.hero-feature-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.hero-feature-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.hero-glow {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(20, 184, 166, 0.15), transparent 70%);
+  pointer-events: none;
+}
+
+/* Stats Section */
+.stats {
+  padding: 60px 0;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Section Styles */
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.section-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: rgba(20, 184, 166, 0.1);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: clamp(32px, 5vw, 48px);
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+
+.section-description {
+  font-size: 18px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Features Section */
+.features {
+  padding: 120px 0;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+}
+
+.feature-card-large {
+  grid-column: span 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.feature-card-icon {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(6, 182, 212, 0.2));
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+
+.feature-card h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.feature-card p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.feature-list svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.feature-demo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.demo-input, .demo-output {
+  flex: 1;
+  padding: 16px;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+}
+
+.demo-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.demo-input p, .demo-output p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.demo-arrow {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* How It Works Section */
+.how-it-works {
+  padding: 120px 0;
+  background: var(--bg-secondary);
+}
+
+.steps-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+}
+
+.step-card {
+  flex: 1;
+  max-width: 320px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  text-align: center;
+  position: relative;
+}
+
+.step-number {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bg-primary);
+}
+
+.step-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(20, 184, 166, 0.1);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 24px auto 20px;
+  color: var(--accent);
+}
+
+.step-card h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.step-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.step-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--border-light);
+  padding-top: 80px;
+}
+
+/* Testimonials Section */
+.testimonials {
+  padding: 120px 0;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.testimonial-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+}
+
+.testimonial-stars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.testimonial-text {
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  color: var(--text-primary);
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-avatar {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bg-primary);
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-info strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.author-info span {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Pricing Section */
+.pricing {
+  padding: 120px 0;
+  background: var(--bg-secondary);
+}
+
+.pricing-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.toggle-label {
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.toggle-label.active {
+  color: var(--text-primary);
+}
+
+.save-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(20, 184, 166, 0.2);
+  border-radius: 100px;
+  font-size: 11px;
+  color: var(--accent);
+  margin-left: 6px;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 26px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  transition: 0.3s;
+}
+
+.toggle-slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--accent);
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(22px);
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+
+.pricing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  position: relative;
+}
+
+.pricing-card-featured {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgba(20, 184, 166, 0.1), transparent);
+}
+
+.featured-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bg-primary);
+}
+
+.pricing-header {
+  margin-bottom: 24px;
+}
+
+.pricing-header h3 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.pricing-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 32px;
+}
+
+.price-currency {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.price-amount {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  margin: 0 4px;
+}
+
+.price-period {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.pricing-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.pricing-features li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.pricing-features svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* CTA Section */
+.cta {
+  position: relative;
+  padding: 120px 0;
+  overflow: hidden;
+}
+
+.cta-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.cta h2 {
+  font-size: clamp(32px, 5vw, 48px);
+  margin-bottom: 20px;
+}
+
+.cta p {
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+
+.cta-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.cta-note {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.cta-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(20, 184, 166, 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+/* Footer */
+.footer {
+  padding: 80px 0 40px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 64px;
+}
+
+.footer-brand p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin: 20px 0;
+  max-width: 280px;
+}
+
+.social-links {
+  display: flex;
+  gap: 16px;
+}
+
+.social-links a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.social-links a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.footer-links h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.footer-links ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--text-primary);
+}
+
+.footer-bottom {
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer-bottom p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .hero-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .feature-card-large {
+    grid-column: span 2;
+    grid-template-columns: 1fr;
+  }
+  
+  .testimonials-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links, .nav-actions {
+    display: none;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
+  }
+  
+  .hero {
+    padding: 140px 0 80px;
+  }
+  
+  .hero-features {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .stat-number {
+    font-size: 36px;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .feature-card-large {
+    grid-column: span 1;
+  }
+  
+  .feature-demo {
+    flex-direction: column;
+  }
+  
+  .demo-arrow {
+    transform: rotate(90deg);
+  }
+  
+  .steps-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .step-connector {
+    transform: rotate(90deg);
+    padding: 20px 0;
+  }
+  
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  
+  .footer-brand {
+    text-align: center;
+  }
+  
+  .footer-brand p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+  
+  .footer-links {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+  
+  .hero-title {
+    font-size: 32px;
+  }
+  
+  .hero-description {
+    font-size: 16px;
+  }
+  
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .hero-actions .btn {
+    width: 100%;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cta-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .cta-actions .btn {
+    width: 100%;
+  }
+}
+
 </style>
-{% endblock %}
-{% block content %}
-<div class="hero">
-  <div class="hero-eyebrow">AI-Powered Content Agent</div>
-  <h1>Create Once,<br/>Publish Everywhere</h1>
-  <p>Transform blogs, podcasts, and YouTube videos into summaries, scripts, social posts, threads, and more.</p>
-  <div class="hero-cta">
-    <a href="/blog"    class="btn btn-primary">Blog</a>
-    <a href="/podcast" class="btn btn-secondary">Podcast</a>
-    <a href="/youtube" class="btn btn-secondary">YouTube</a>
-    <a href="/tools"   class="btn btn-secondary">Quick Tools</a>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="nav container">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v3m6.366 1.634l-2.122 2.122M21 12h-3m-1.634 6.366l-2.122-2.122M12 21v-3m-6.366-1.634l2.122-2.122M3 12h3m1.634-6.366l2.122 2.122"/>
+          </svg>
+        </div>
+        <span>ContentAI</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How it Works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button onclick="toggleHomeTheme()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--bg-card);border:1px solid var(--border-light);border-radius:9px;color:var(--text-secondary);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border-light)'"><span id="homeThemeIcon">🌙</span><span id="homeThemeLabel">Dark</span><span style="width:30px;height:16px;border-radius:999px;background:var(--accent);position:relative;display:inline-block;margin-left:4px;"><span style="position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .3s;"></span></span></button>
+        <a href="/history" class="btn btn-ghost">History</a>
+        <a href="/blog" class="btn btn-primary">Get Started</a>
+      </div>
+      <button class="mobile-menu-btn" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </nav>
+    <div class="mobile-menu">
+      <ul class="mobile-nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How it Works</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="/history" class="btn btn-ghost">History</a></li>
+        <li><a href="/blog" class="btn btn-primary">Get Started</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content container">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Powered by Advanced AI
+      </div>
+      <h1 class="hero-title">Transform Your Content<br><span class="gradient-text">With AI Magic</span></h1>
+      <p class="hero-description">Repurpose any content in seconds. From videos to blog posts, audio to social media - our AI agent handles it all automatically.</p>
+      <div class="hero-actions">
+        <a href="/blog" class="btn btn-primary btn-lg">
+          Start Free Trial
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </a>
+        <a href="/blog" class="btn btn-outline btn-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          Watch Demo
+        </a>
+      </div>
+      <div class="hero-features">
+        <div class="hero-feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <h3>Text Summarization</h3>
+          <p>Condense long articles into key insights</p>
+        </div>
+        <div class="hero-feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="23 7 16 12 23 17 23 7"></polygon>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+            </svg>
+          </div>
+          <h3>Video to Text</h3>
+          <p>Extract transcripts from any video</p>
+        </div>
+        <div class="hero-feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </div>
+          <h3>Audio Transcription</h3>
+          <p>Convert speech to text instantly</p>
+        </div>
+        <div class="hero-feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </div>
+          <h3>Multi-Language</h3>
+          <p>Support for 100+ languages</p>
+        </div>
+      </div>
+    </div>
+    <div class="hero-glow"></div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="container stats-grid">
+      <div class="stat-item">
+        <div class="stat-number">10M+</div>
+        <div class="stat-label">Content Pieces Processed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">50K+</div>
+        <div class="stat-label">Active Users</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">100+</div>
+        <div class="stat-label">Languages Supported</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">99.9%</div>
+        <div class="stat-label">Uptime Guaranteed</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Features</span>
+        <h2 class="section-title">Everything You Need to<br><span class="gradient-text">Repurpose Content</span></h2>
+        <p class="section-description">Our AI-powered tools transform your content across multiple formats and platforms in seconds.</p>
+      </div>
+      <div class="features-grid">
+        <!-- Feature 1: Text Summarization -->
+        <div class="feature-card feature-card-large">
+          <div class="feature-card-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+          </div>
+          <h3>Text Summarization</h3>
+          <p>Transform lengthy articles, documents, and reports into concise, actionable summaries. Our AI understands context and preserves key information.</p>
+          <ul class="feature-list">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Adjustable summary length
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Key points extraction
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Bullet point formatting
+            </li>
+          </ul>
+          <div class="feature-demo">
+            <div class="demo-input">
+              <span class="demo-label">Input</span>
+              <p>Long article with 2,500 words about artificial intelligence and its impact on modern business practices...</p>
+            </div>
+            <div class="demo-arrow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+            <div class="demo-output">
+              <span class="demo-label">Output</span>
+              <p>3 key takeaways in 100 words with actionable insights</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature 2: Video to Text -->
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="23 7 16 12 23 17 23 7"></polygon>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+            </svg>
+          </div>
+          <h3>Video to Text</h3>
+          <p>Extract transcripts and content from YouTube, Vimeo, and uploaded videos with timestamps.</p>
+          <ul class="feature-list">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              YouTube/Vimeo support
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Timestamp markers
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Speaker identification
+            </li>
+          </ul>
+        </div>
+
+        <!-- Feature 3: Audio Transcription -->
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </div>
+          <h3>Audio Transcription</h3>
+          <p>Convert podcasts, meetings, and voice recordings to accurate text in 50+ languages.</p>
+          <ul class="feature-list">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Real-time transcription
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Noise filtering
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Export to SRT/VTT
+            </li>
+          </ul>
+        </div>
+
+        <!-- Feature 4: Blog Post Generator -->
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </div>
+          <h3>Blog Post Generator</h3>
+          <p>Transform any content into SEO-optimized blog posts with proper structure and formatting.</p>
+          <ul class="feature-list">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              SEO optimization
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Multiple tone options
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Auto-generated headings
+            </li>
+          </ul>
+        </div>
+
+        <!-- Feature 5: Social Media Content -->
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+          </div>
+          <h3>Social Media Content</h3>
+          <p>Create platform-specific posts for Twitter, LinkedIn, Instagram, and more from any source.</p>
+          <ul class="feature-list">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Platform optimization
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Hashtag suggestions
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Thread generation
+            </li>
+          </ul>
+        </div>
+
+        <!-- Feature 6: Content Translation -->
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+          </div>
+          <h3>Content Translation</h3>
+          <p>Translate your content to 100+ languages while maintaining context, tone, and meaning.</p>
+          <ul class="feature-list">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Context-aware translation
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Localization support
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Batch processing
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">How It Works</span>
+        <h2 class="section-title">Three Simple Steps to<br><span class="gradient-text">Transform Your Content</span></h2>
+        <p class="section-description">Get started in minutes with our intuitive workflow.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <div class="step-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <h3>Upload Your Content</h3>
+          <p>Paste text, drop a video link, or upload audio files. We support all major formats and platforms.</p>
+        </div>
+        <div class="step-connector">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <div class="step-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <h3>Choose Output Format</h3>
+          <p>Select how you want your content transformed: summary, blog post, social posts, or transcription.</p>
+        </div>
+        <div class="step-connector">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <div class="step-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <h3>Get Results Instantly</h3>
+          <p>Our AI processes your content in seconds. Edit, refine, and export in your preferred format.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="pricing">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Pricing</span>
+        <h2 class="section-title">Simple, Transparent<br><span class="gradient-text">Pricing</span></h2>
+        <p class="section-description">Choose the plan that fits your content needs. All plans include a 14-day free trial.</p>
+        <div class="pricing-toggle">
+          <span class="toggle-label active" data-period="monthly">Monthly</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pricing-toggle">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label" data-period="yearly">Yearly <span class="save-badge">Save 20%</span></span>
+        </div>
+      </div>
+      <div class="pricing-grid">
+        <!-- Starter Plan -->
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3>Starter</h3>
+            <p>Perfect for individuals and small projects</p>
+          </div>
+          <div class="pricing-price">
+            <span class="price-currency">$</span>
+            <span class="price-amount" data-monthly="19" data-yearly="15">19</span>
+            <span class="price-period">/month</span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              50 content transformations/month
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Text summarization
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Video to text (up to 30 min)
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              5 languages
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Email support
+            </li>
+          </ul>
+          <a href="/blog" class="btn btn-outline btn-block">Start Free Trial</a>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="pricing-card pricing-card-featured">
+          <div class="featured-badge">Most Popular</div>
+          <div class="pricing-header">
+            <h3>Pro</h3>
+            <p>For content creators and marketers</p>
+          </div>
+          <div class="pricing-price">
+            <span class="price-currency">$</span>
+            <span class="price-amount" data-monthly="49" data-yearly="39">49</span>
+            <span class="price-period">/month</span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Unlimited transformations
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              All content types
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Video to text (unlimited length)
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              50+ languages
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Priority support
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              API access
+            </li>
+          </ul>
+          <a href="/blog" class="btn btn-primary btn-block">Start Free Trial</a>
+        </div>
+
+        <!-- Enterprise Plan -->
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3>Enterprise</h3>
+            <p>For teams and organizations</p>
+          </div>
+          <div class="pricing-price">
+            <span class="price-currency">$</span>
+            <span class="price-amount" data-monthly="149" data-yearly="119">149</span>
+            <span class="price-period">/month</span>
+          </div>
+          <ul class="pricing-features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Everything in Pro
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Unlimited team members
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Custom AI training
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              100+ languages
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              24/7 dedicated support
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              SSO & advanced security
+            </li>
+          </ul>
+          <a href="/blog" class="btn btn-outline btn-block">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Ready to Transform Your<br><span class="gradient-text">Content Workflow?</span></h2>
+        <p>Join thousands of content creators who are saving hours every week with ContentAI.</p>
+        <div class="cta-actions">
+          <a href="/blog" class="btn btn-primary btn-lg">
+            Start Free Trial
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+          <a href="/tools" class="btn btn-ghost btn-lg">Talk to Sales</a>
+        </div>
+        <p class="cta-note">No credit card required. 14-day free trial.</p>
+      </div>
+    </div>
+    <div class="cta-glow"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="#" class="logo">
+            <div class="logo-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v3m6.366 1.634l-2.122 2.122M21 12h-3m-1.634 6.366l-2.122-2.122M12 21v-3m-6.366-1.634l2.122-2.122M3 12h3m1.634-6.366l2.122 2.122"/>
+              </svg>
+            </div>
+            <span>ContentAI</span>
+          </a>
+          <p>Transform your content effortlessly with AI-powered tools. From videos to blog posts, audio to social media.</p>
+          <div class="social-links">
+            <a href="#" aria-label="Twitter">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+              </svg>
+            </a>
+            <a href="#" aria-label="LinkedIn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                <rect x="2" y="9" width="4" height="12"></rect>
+                <circle cx="4" cy="4" r="2"></circle>
+              </svg>
+            </a>
+            <a href="#" aria-label="GitHub">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#">API</a></li>
+            <li><a href="#">Integrations</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Tutorials</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Status</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+            <li><a href="#">GDPR</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 ContentAI. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+// Mobile Menu Toggle
+const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+const mobileMenu = document.querySelector('.mobile-menu');
+
+if (mobileMenuBtn && mobileMenu) {
+  mobileMenuBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('active');
+    
+    // Update icon
+    const isOpen = mobileMenu.classList.contains('active');
+    mobileMenuBtn.innerHTML = isOpen 
+      ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>`
+      : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>`;
+  });
+
+  // Close mobile menu when clicking a link
+  const mobileNavLinks = mobileMenu.querySelectorAll('a');
+  mobileNavLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('active');
+      mobileMenuBtn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>`;
+    });
+  });
+}
+
+// Pricing Toggle
+const pricingToggle = document.getElementById('pricing-toggle');
+const toggleLabels = document.querySelectorAll('.toggle-label');
+const priceAmounts = document.querySelectorAll('.price-amount');
+
+if (pricingToggle) {
+  pricingToggle.addEventListener('change', () => {
+    const isYearly = pricingToggle.checked;
+    
+    // Update active label
+    toggleLabels.forEach(label => {
+      const period = label.dataset.period;
+      if ((period === 'yearly' && isYearly) || (period === 'monthly' && !isYearly)) {
+        label.classList.add('active');
+      } else {
+        label.classList.remove('active');
+      }
+    });
+    
+    // Update prices
+    priceAmounts.forEach(amount => {
+      const monthlyPrice = amount.dataset.monthly;
+      const yearlyPrice = amount.dataset.yearly;
+      amount.textContent = isYearly ? yearlyPrice : monthlyPrice;
+    });
+  });
+}
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const href = this.getAttribute('href');
+    if (href === '#') return;
+    
+    e.preventDefault();
+    const target = document.querySelector(href);
+    if (target) {
+      const headerHeight = document.querySelector('.header').offsetHeight;
+      const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+      
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+    }
+  });
+});
+
+// Header background on scroll
+const header = document.querySelector('.header');
+let lastScroll = 0;
+
+window.addEventListener('scroll', () => {
+  const currentScroll = window.pageYOffset;
+  
+  if (currentScroll > 100) {
+    header.style.background = 'rgba(10, 10, 11, 0.95)';
+  } else {
+    header.style.background = 'rgba(10, 10, 11, 0.8)';
+  }
+  
+  lastScroll = currentScroll;
+});
+
+// Animate elements on scroll
+const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, observerOptions);
+
+// Add animation to cards and sections
+document.querySelectorAll('.feature-card, .step-card, .testimonial-card, .pricing-card, .stat-item').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  observer.observe(el);
+});
+
+// Counter animation for stats
+const animateCounter = (element, target, duration = 2000) => {
+  let start = 0;
+  const increment = target / (duration / 16);
+  
+  const updateCounter = () => {
+    start += increment;
+    if (start < target) {
+      const displayValue = Math.floor(start);
+      if (target >= 1000000) {
+        element.textContent = (displayValue / 1000000).toFixed(0) + 'M+';
+      } else if (target >= 1000) {
+        element.textContent = (displayValue / 1000).toFixed(0) + 'K+';
+      } else if (target < 1) {
+        element.textContent = (displayValue).toFixed(1) + '%';
+      } else {
+        element.textContent = displayValue + '+';
+      }
+      requestAnimationFrame(updateCounter);
+    } else {
+      if (target >= 1000000) {
+        element.textContent = (target / 1000000).toFixed(0) + 'M+';
+      } else if (target >= 1000) {
+        element.textContent = (target / 1000).toFixed(0) + 'K+';
+      } else if (target === 99.9) {
+        element.textContent = '99.9%';
+      } else {
+        element.textContent = target + '+';
+      }
+    }
+  };
+  
+  updateCounter();
+};
+
+// Observe stats section for counter animation
+const statsSection = document.querySelector('.stats');
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const statNumbers = entry.target.querySelectorAll('.stat-number');
+      statNumbers.forEach(stat => {
+        const text = stat.textContent;
+        let value;
+        if (text.includes('M')) {
+          value = parseFloat(text) * 1000000;
+        } else if (text.includes('K')) {
+          value = parseFloat(text) * 1000;
+        } else if (text.includes('%')) {
+          value = parseFloat(text);
+        } else {
+          value = parseInt(text);
+        }
+        animateCounter(stat, value);
+      });
+      statsObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+if (statsSection) {
+  statsObserver.observe(statsSection);
+}
+
+// Feature cards hover effect
+document.querySelectorAll('.feature-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  });
+});
+
+</script>
+
+<div id="quick-launcher" style="position:fixed;bottom:28px;right:28px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+  <div id="ql-menu" style="display:flex;flex-direction:column;gap:8px;margin-bottom:4px;">
+    <a href="/blog"    style="display:flex;align-items:center;gap:8px;padding:9px 16px;background:#16161a;border:1px solid #27272a;color:#fafafa;border-radius:10px;font-weight:600;font-size:13px;text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='#14b8a6'" onmouseout="this.style.borderColor='#27272a'">📝 Blog Post</a>
+    <a href="/podcast" style="display:flex;align-items:center;gap:8px;padding:9px 16px;background:#16161a;border:1px solid #27272a;color:#fafafa;border-radius:10px;font-weight:600;font-size:13px;text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='#14b8a6'" onmouseout="this.style.borderColor='#27272a'">🎙️ Podcast</a>
+    <a href="/youtube" style="display:flex;align-items:center;gap:8px;padding:9px 16px;background:#16161a;border:1px solid #27272a;color:#fafafa;border-radius:10px;font-weight:600;font-size:13px;text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='#14b8a6'" onmouseout="this.style.borderColor='#27272a'">▶ YouTube</a>
+    <a href="/tools"   style="display:flex;align-items:center;gap:8px;padding:9px 16px;background:#16161a;border:1px solid #27272a;color:#fafafa;border-radius:10px;font-weight:600;font-size:13px;text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='#14b8a6'" onmouseout="this.style.borderColor='#27272a'">⚡ Quick Tools</a>
+    <a href="/history" style="display:flex;align-items:center;gap:8px;padding:9px 16px;background:#16161a;border:1px solid #27272a;color:#fafafa;border-radius:10px;font-weight:600;font-size:13px;text-decoration:none;transition:border-color .2s;" onmouseover="this.style.borderColor='#14b8a6'" onmouseout="this.style.borderColor='#27272a'">🕓 History</a>
   </div>
+  <button onclick="document.getElementById('ql-menu').style.display=document.getElementById('ql-menu').style.display==='none'?'flex':'none'" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#14b8a6,#06b6d4);border:none;color:#0a0a0b;font-size:1.4rem;cursor:pointer;box-shadow:0 4px 20px rgba(20,184,166,.5);display:flex;align-items:center;justify-content:center;transition:transform .2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform=''">⚡</button>
 </div>
-<div class="card">
-  <div class="section-title">Choose Your Input</div>
-  <div class="section-sub">Pick a source and we handle the rest.</div>
-  <div class="input-grid">
-    <a href="/blog" class="input-card">
-      <div class="ic-top"><div class="ic-icon-wrap purple">Blog</div><div><div class="ic-title">Blog Post</div><span class="ic-badge">Text / URL</span></div></div>
-      <div class="ic-body"><div class="ic-desc">Paste text or a URL. Scrapes and processes any article automatically.</div><div class="ic-arrow">Process Blog</div></div>
-    </a>
-    <a href="/podcast" class="input-card">
-      <div class="ic-top"><div class="ic-icon-wrap teal">Audio</div><div><div class="ic-title">Podcast / Audio</div><span class="ic-badge">WAV MP3 M4A</span></div></div>
-      <div class="ic-body"><div class="ic-desc">Upload an audio file. Transcribed offline using Vosk.</div><div class="ic-arrow">Upload Audio</div></div>
-    </a>
-    <a href="/youtube" class="input-card">
-      <div class="ic-top"><div class="ic-icon-wrap pink">Video</div><div><div class="ic-title">YouTube Video</div><span class="ic-badge">Any YT Link</span></div></div>
-      <div class="ic-body"><div class="ic-desc">Paste any YouTube link. Extracts captions or transcribes audio.</div><div class="ic-arrow">Paste Link</div></div>
-    </a>
-  </div>
-</div>
-<div class="card">
-  <div class="section-title">What You Get</div>
-  <div class="section-sub">Every input generates 8+ ready-to-use content formats instantly.</div>
-  <div class="feature-grid">
-    <div class="feature-item"><div class="fi-icon">S</div><div><div class="fi-title">Text Summarization</div><div class="fi-desc">TF-IDF extractive summary, length-aware.</div></div></div>
-    <div class="feature-item"><div class="fi-icon">V</div><div><div class="fi-title">Video Script</div><div class="fi-desc">30-60 sec script with Hook, Idea, Example, CTA.</div></div></div>
-    <div class="feature-item"><div class="fi-icon">K</div><div><div class="fi-title">Keyword Extraction</div><div class="fi-desc">Top keywords via TF-IDF for SEO and tagging.</div></div></div>
-    <div class="feature-item"><div class="fi-icon">H</div><div><div class="fi-title">Hashtag Generator</div><div class="fi-desc">Platform-specific sets for all major networks.</div></div></div>
-    <div class="feature-item"><div class="fi-icon">T</div><div><div class="fi-title">Title Generator</div><div class="fi-desc">10 title ideas for listicles, how-tos, SEO.</div></div></div>
-    <div class="feature-item"><div class="fi-icon">Tw</div><div><div class="fi-title">Twitter Thread</div><div class="fi-desc">Auto-splits content into a numbered thread.</div></div></div>
-    <div class="feature-item"><div class="fi-icon">Li</div><div><div class="fi-title">Blog to LinkedIn</div><div class="fi-desc">Converts blog posts into LinkedIn-optimized posts.</div></div></div>
-    <div class="feature-item"><div class="fi-icon">So</div><div><div class="fi-title">Social Posts</div><div class="fi-desc">Ready-to-post for Twitter, Instagram, LinkedIn.</div></div></div>
-  </div>
-</div>
-<div class="cta-banner">
-  <div class="cta-text"><h3>Ready to repurpose your content?</h3><p>Paste a blog URL or YouTube link and get 8+ formats in seconds.</p></div>
-  <a href="/blog" class="cta-btn">Get Started</a>
-</div>
-{% endblock %}
+
+
+<style>
+[data-theme="light"] {
+  --bg-primary:#f8fafc !important;
+  --bg-secondary:#f1f5f9 !important;
+  --bg-card:#ffffff !important;
+  --bg-card-hover:#f8fafc !important;
+  --text-primary:#0f172a !important;
+  --text-secondary:#475569 !important;
+  --text-muted:#94a3b8 !important;
+  --accent:#0d9488 !important;
+  --border:#e2e8f0 !important;
+  --border-light:#cbd5e1 !important;
+  --gradient-start:#0d9488 !important;
+  --gradient-end:#0891b2 !important;
+}
+[data-theme="light"] .header { background: rgba(248,250,252,0.9) !important; border-bottom-color: #e2e8f0 !important; }
+[data-theme="light"] .hero-glow { background: radial-gradient(ellipse, rgba(13,148,136,0.12), transparent 70%) !important; }
+[data-theme="light"] .cta-glow  { background: radial-gradient(ellipse, rgba(13,148,136,0.08), transparent 70%) !important; }
+</style>
+
+<script>
+(function(){
+  const t = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+function toggleHomeTheme() {
+  const root = document.documentElement;
+  const t = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', t);
+  localStorage.setItem('theme', t);
+  const icon = document.getElementById('homeThemeIcon');
+  const lbl  = document.getElementById('homeThemeLabel');
+  if (icon) icon.textContent = t === 'dark' ? '🌙' : '☀️';
+  if (lbl)  lbl.textContent  = t === 'dark' ? 'Dark' : 'Light';
+}
+// Apply on load
+window.addEventListener('DOMContentLoaded', () => {
+  const t = localStorage.getItem('theme') || 'dark';
+  const icon = document.getElementById('homeThemeIcon');
+  const lbl  = document.getElementById('homeThemeLabel');
+  if (icon) icon.textContent = t === 'dark' ? '🌙' : '☀️';
+  if (lbl)  lbl.textContent  = t === 'dark' ? 'Dark' : 'Light';
+});
+</script>
+
+</body>
+</html>

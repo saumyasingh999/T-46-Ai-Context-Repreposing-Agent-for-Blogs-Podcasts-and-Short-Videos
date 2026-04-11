@@ -4,20 +4,20 @@
 {% block extra_head %}
 <style>
   /* Tabs */
-  .tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 5px; margin-bottom: 1.25rem; overflow-x: auto; scrollbar-width: none; }
+  .tabs { display: flex; gap: 4px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 5px; margin-bottom: 1.25rem; overflow-x: auto; scrollbar-width: none; }
   .tabs::-webkit-scrollbar { display: none; }
   .tab-btn {
     flex-shrink: 0; padding: 8px 14px; border: none; background: transparent;
-    color: var(--text2); font-family: inherit; font-size: 0.8rem; font-weight: 500;
+    color: var(--text-secondary); font-family: inherit; font-size: 0.8rem; font-weight: 500;
     border-radius: 7px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
   }
-  .tab-btn:hover  { background: var(--surface2); color: var(--text); }
+  .tab-btn:hover  { background: var(--bg-secondary); color: var(--text-primary); }
   .tab-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; box-shadow: 0 2px 10px var(--glow); }
   .tab-panel        { display: none; }
   .tab-panel.active { display: block; }
 
   /* Highlight items */
-  .hl-item { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; margin-bottom: 8px; }
+  .hl-item { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; margin-bottom: 8px; }
   .hl-num  { min-width: 22px; height: 22px; background: rgba(124,106,247,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--accent); flex-shrink: 0; }
   .hl-text { font-size: 0.87rem; line-height: 1.6; flex: 1; }
 
@@ -37,21 +37,21 @@
   .plat-li     { color: #4a9edd; }
 
   /* Thread tweet */
-  .thread-tweet { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; padding: 12px 14px; margin-bottom: 8px; position: relative; }
-  .tweet-num    { font-size: 0.68rem; color: var(--text3); font-weight: 700; margin-bottom: 5px; }
+  .thread-tweet { background: var(--bg-secondary); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; padding: 12px 14px; margin-bottom: 8px; position: relative; }
+  .tweet-num    { font-size: 0.68rem; color: var(--text-muted); font-weight: 700; margin-bottom: 5px; }
 
   /* Hashtag platform grid */
   .ht-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-  .ht-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; }
-  .ht-plat { font-size: 0.72rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; }
+  .ht-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; }
+  .ht-plat { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; }
   .ht-tags { font-size: 0.8rem; color: #a78bfa; line-height: 1.8; word-break: break-word; }
 
   /* Title items */
-  .title-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 7px; font-size: 0.87rem; line-height: 1.5; }
+  .title-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 7px; font-size: 0.87rem; line-height: 1.5; }
 
   /* Meta banner */
-  .result-meta { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.18); border-radius: 9px; margin-bottom: 1.25rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--text2); }
-  .result-meta strong { color: var(--text); }
+  .result-meta { display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.18); border-radius: 9px; margin-bottom: 1.25rem; flex-wrap: wrap; font-size: 0.8rem; color: var(--text-secondary); }
+  .result-meta strong { color: var(--text-primary); }
 
   /* Actions */
   .actions-row { display: flex; gap: 9px; margin-top: 1.75rem; flex-wrap: wrap; }
@@ -102,7 +102,7 @@
     {% if data.input_type in ['podcast','youtube'] %}
     <div class="output-block" style="margin-top:0.75rem;">
       <div class="output-label">🎤 Transcript Preview <button class="copy-btn" onclick="copyText('transcriptText',this)">📋 Copy</button></div>
-      <div class="output-text" id="transcriptText" style="max-height:220px;overflow-y:auto;color:var(--text2);">{{ data.input_preview }}{% if data.input_preview|length >= 300 %} <em style="color:var(--text3);">… (truncated)</em>{% endif %}</div>
+      <div class="output-text" id="transcriptText" style="max-height:220px;overflow-y:auto;color:var(--text-secondary);">{{ data.input_preview }}{% if data.input_preview|length >= 300 %} <em style="color:var(--text-muted);">… (truncated)</em>{% endif %}</div>
     </div>
     {% endif %}
   </div>
@@ -118,7 +118,7 @@
       <div class="hl-text">{{ h }}</div>
       <button class="copy-btn" onclick="copyRaw(this.previousElementSibling.innerText,this)" style="flex-shrink:0;">📋</button>
     </div>
-    {% else %}<p style="color:var(--text3);font-size:0.87rem;">No highlights found.</p>{% endfor %}
+    {% else %}<p style="color:var(--text-muted);font-size:0.87rem;">No highlights found.</p>{% endfor %}
   </div>
 </div>
 
@@ -130,7 +130,7 @@
       <button class="copy-btn" onclick="copyText('scriptBox',this)">📋 Copy Script</button>
     </div>
     <div class="script-box" id="scriptBox">{{ data.script }}</div>
-    <p style="font-size:0.78rem;color:var(--text3);margin-top:10px;">💡 Keep a natural pace. Add B-roll between sections for a polished result.</p>
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:10px;">💡 Keep a natural pace. Add B-roll between sections for a polished result.</p>
   </div>
 </div>
 
@@ -164,7 +164,7 @@
   <div class="card">
     <div class="card-title"><span class="dot"></span> Twitter / X Thread</div>
     {% if data.twitter_thread %}
-    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">{{ data.twitter_thread|length }} tweets — ready to post as a thread.</p>
+    <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:1rem;">{{ data.twitter_thread|length }} tweets — ready to post as a thread.</p>
     {% for tweet in data.twitter_thread %}
     <div class="thread-tweet">
       <div class="tweet-num">Tweet {{ loop.index }} / {{ data.twitter_thread|length }}</div>
@@ -176,7 +176,7 @@
       <div class="output-label">Full Thread <button class="copy-btn" onclick="copyText('threadAll',this)">📋 Copy All</button></div>
       <div class="output-text" id="threadAll">{{ data.twitter_thread | join('\n\n---\n\n') }}</div>
     </div>
-    {% else %}<p style="color:var(--text3);">No thread generated.</p>{% endif %}
+    {% else %}<p style="color:var(--text-muted);">No thread generated.</p>{% endif %}
   </div>
 </div>
 
@@ -189,8 +189,8 @@
       <div class="output-label">LinkedIn Post <button class="copy-btn" onclick="copyText('liPost',this)">📋 Copy</button></div>
       <div class="output-text" id="liPost">{{ data.linkedin_post }}</div>
     </div>
-    <p style="font-size:0.78rem;color:var(--text3);margin-top:8px;">💡 Post between 8–10am or 5–6pm on weekdays. First 2 lines show before "see more" — make them count.</p>
-    {% else %}<p style="color:var(--text3);">No LinkedIn post generated.</p>{% endif %}
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">💡 Post between 8–10am or 5–6pm on weekdays. First 2 lines show before "see more" — make them count.</p>
+    {% else %}<p style="color:var(--text-muted);">No LinkedIn post generated.</p>{% endif %}
   </div>
 </div>
 
@@ -198,7 +198,7 @@
 <div id="tab-titles" class="tab-panel">
   <div class="card">
     <div class="card-title"><span class="dot"></span> Title Ideas</div>
-    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">Click 📋 to copy any title for your blog, video, or social post.</p>
+    <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:1rem;">Click 📋 to copy any title for your blog, video, or social post.</p>
     {% if data.titles %}
       {% for title in data.titles %}
       <div class="title-item">
@@ -206,7 +206,7 @@
         <button class="copy-btn" onclick="copyRaw(this.previousElementSibling.innerText.slice(3),this)">📋</button>
       </div>
       {% endfor %}
-    {% else %}<p style="color:var(--text3);">No titles generated.</p>{% endif %}
+    {% else %}<p style="color:var(--text-muted);">No titles generated.</p>{% endif %}
   </div>
 </div>
 
@@ -216,7 +216,7 @@
     <div class="card-title"><span class="dot"></span> Hashtags by Platform</div>
     {% if data.hashtags %}
     <div style="margin-bottom:1.1rem;">
-      <div style="font-size:0.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;">All Tags — click to copy</div>
+      <div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;">All Tags — click to copy</div>
       <div class="kw-cloud">
         {% for tag in data.hashtags %}<span class="kw-pill" onclick="copyRaw('{{ tag }}',this)">{{ tag }}</span>{% endfor %}
       </div>
@@ -230,7 +230,7 @@
       </div>
       {% endfor %}
     </div>
-    {% else %}<p style="color:var(--text3);">No hashtags generated.</p>{% endif %}
+    {% else %}<p style="color:var(--text-muted);">No hashtags generated.</p>{% endif %}
   </div>
 </div>
 
@@ -238,10 +238,10 @@
 <div id="tab-keywords" class="tab-panel">
   <div class="card">
     <div class="card-title"><span class="dot"></span> Extracted Keywords</div>
-    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">Click any keyword to copy. Use for SEO, tags, or content planning.</p>
+    <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:1rem;">Click any keyword to copy. Use for SEO, tags, or content planning.</p>
     <div class="kw-cloud">
       {% for kw in data.keywords %}<div class="kw-pill" onclick="copyRaw('{{ kw }}',this)">{{ kw }}</div>
-      {% else %}<p style="color:var(--text3);">No keywords extracted.</p>{% endfor %}
+      {% else %}<p style="color:var(--text-muted);">No keywords extracted.</p>{% endfor %}
     </div>
     <div class="output-block" style="margin-top:1.1rem;">
       <div class="output-label">Hashtag Version <button class="copy-btn" onclick="copyText('hashText',this)">📋 Copy</button></div>
