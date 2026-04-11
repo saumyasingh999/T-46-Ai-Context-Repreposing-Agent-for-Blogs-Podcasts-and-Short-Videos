@@ -62,6 +62,10 @@ def run_pipeline(text, tone):
 def index():
     return render_template('index.html')
 
+@app.route('/app')
+def app_ui():
+    return render_template('app.html')
+
 
 @app.route('/blog', methods=['GET', 'POST'])
 def blog():

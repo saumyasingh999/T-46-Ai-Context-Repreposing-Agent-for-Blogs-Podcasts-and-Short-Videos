@@ -17,7 +17,7 @@
       <div class="upload-sub">WAV · MP3 · OGG · M4A &nbsp;·&nbsp; Max 50MB</div>
       <div class="upload-name"></div>
     </div>
-    <p style="font-size:0.78rem;color:var(--text3);margin-top:10px;">
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:10px;">
       Powered by OpenAI Whisper — works with any audio format. No model download needed.
     </p>
   </div>
@@ -26,7 +26,7 @@
     <div class="card-title"><span class="dot"></span> Audio Language</div>
     <div class="form-group">
       <label for="lang">Select the language spoken in the audio</label>
-      <select id="lang" name="language" style="width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.87rem;font-family:inherit;">
+      <select id="lang" name="language">
         <option value="auto">🌐 Auto-detect</option>
         <option value="en">🇬🇧 English</option>
         <option value="hi">🇮🇳 Hindi (हिन्दी)</option>
@@ -50,7 +50,7 @@
         <option value="te">🇮🇳 Telugu (తెలుగు)</option>
       </select>
     </div>
-    <p style="font-size:0.76rem;color:var(--text3);margin-top:4px;">Specifying the language improves transcription accuracy.</p>
+    <p style="font-size:0.76rem;color:var(--text-muted);margin-top:4px;">Specifying the language improves transcription accuracy.</p>
   </div>
 
   <div class="card">
@@ -76,7 +76,7 @@
       <div class="spinner"></div>
       <span class="btn-text">🎙️ Transcribe &amp; Generate</span>
     </button>
-    <p style="text-align:center;font-size:0.76rem;color:var(--text3);margin-top:8px;">Allow up to 2 minutes for longer audio</p>
+    <p style="text-align:center;font-size:0.76rem;color:var(--text-muted);margin-top:8px;">Allow up to 2 minutes for longer audio</p>
   </div>
 </form>
 
@@ -84,13 +84,13 @@
 <div class="card" style="margin-top:1.5rem;">
   <div class="card-title"><span class="dot"></span> How it works</div>
   <div style="display:flex;flex-direction:column;gap:10px;">
-    <div style="padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;">
+    <div style="padding:12px 14px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:9px;">
       <div style="font-size:0.83rem;font-weight:600;margin-bottom:3px;">🤖 Powered by OpenAI Whisper</div>
-      <div style="font-size:0.78rem;color:var(--text2);">Runs fully offline — no API key required. Supports WAV, MP3, OGG, M4A.</div>
+      <div style="font-size:0.78rem;color:var(--text-secondary);">Runs fully offline — no API key required. Supports WAV, MP3, OGG, M4A.</div>
     </div>
-    <div style="padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;">
+    <div style="padding:12px 14px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:9px;">
       <div style="font-size:0.83rem;font-weight:600;margin-bottom:3px;">⏱️ Processing time</div>
-      <div style="font-size:0.78rem;color:var(--text2);">First run downloads the Whisper base model (~140MB). Subsequent runs are faster.</div>
+      <div style="font-size:0.78rem;color:var(--text-secondary);">First run downloads the Whisper base model (~140MB). Subsequent runs are faster.</div>
     </div>
   </div>
 </div>
