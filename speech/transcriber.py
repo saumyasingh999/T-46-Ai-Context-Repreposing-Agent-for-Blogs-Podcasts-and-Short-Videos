@@ -51,7 +51,9 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
 
         audio_path = None
         for f in os.listdir(upload_folder):
-            if f.startswith(f"yt_{video_id}") and (f.endswith(".mp3") or f.endswith(".wav") or f.endswith(".m4a")):
+            if f.startswith(f"yt_{video_id}") and (
+                f.endswith(".mp3") or f.endswith(".wav") or f.endswith(".m4a")
+            ):
                 audio_path = os.path.join(upload_folder, f)
                 break
 
@@ -73,13 +75,14 @@ def _get_youtube_captions(url, language=None):
     try:
         import yt_dlp
         import urllib.request
+
         with yt_dlp.YoutubeDL({"skip_download": True, "quiet": True}) as ydl:
             info = ydl.extract_info(url, download=False)
 
-        subtitles  = info.get("subtitles", {})
-        auto_caps  = info.get("automatic_captions", {})
+        subtitles = info.get("subtitles", {})
+        auto_caps = info.get("automatic_captions", {})
 
-        # Build priority list: requested lang first, then 'en' as fallback
+        # Priority: requested lang first, then English fallback
         langs_to_try = []
         if lang:
             langs_to_try.append(lang)
@@ -109,65 +112,60 @@ def _get_youtube_captions(url, language=None):
 
 
 def _parse_subtitle(raw, fmt="vtt"):
-    """Parse subtitle format to plain text, removing duplicate lines from sliding-window captions."""
+    """Parse subtitle format to plain text, removing only exact duplicate lines."""
     if fmt == "json3":
         return _parse_json3(raw)
 
-    # VTT / SRV3 — strip timestamps, tags, headers
-    text = re.sub(r"\d{2}:\d{2}:\d{2}[\.,]\d{3}\s*-->\s*\d{2}:\d{2}:\d{2}[\.,]\d{3}[^\n]*", "", raw)
+    # VTT / SRV3 — strip timestamps, HTML tags, headers, sequence numbers
+    text = re.sub(
+        r"\d{2}:\d{2}:\d{2}[\.,]\d{3}\s*-->\s*\d{2}:\d{2}:\d{2}[\.,]\d{3}[^\n]*",
+        "", raw
+    )
     text = re.sub(r"<[^>]+>", "", text)
     text = re.sub(r"^WEBVTT.*$", "", text, flags=re.MULTILINE)
     text = re.sub(r"^\d+$", "", text, flags=re.MULTILINE)
 
-    # Split into individual caption lines and deduplicate
+    # Split into lines, strip blanks
     lines = [l.strip() for l in text.splitlines() if l.strip()]
-    deduped = _deduplicate_captions(lines)
+
+    # Remove exact consecutive duplicates only (safe for all languages)
+    deduped = _remove_exact_duplicates(lines)
+
     return re.sub(r"\s+", " ", " ".join(deduped)).strip()
 
 
-def _deduplicate_captions(lines):
+def _remove_exact_duplicates(lines):
     """
-    Remove repeated/overlapping lines from YouTube sliding-window captions.
-    YouTube auto-captions repeat each phrase 2-3 times as the caption window slides.
-    Strategy: keep a line only if it is NOT a suffix of the previous kept line
-    and NOT already seen recently.
+    Remove only exact duplicate lines that appear consecutively or repeatedly.
+    This is safe for English and all languages — it only removes lines that are
+    100% identical, not substring matches which would break legitimate text.
     """
     if not lines:
         return lines
 
+    seen_recent = []   # sliding window of last N normalised lines
     result = []
-    seen = set()
+    window = 6         # how many recent lines to check for duplicates
 
     for line in lines:
         norm = re.sub(r"\s+", " ", line).strip().lower()
         if not norm:
             continue
 
-        # Skip if exact duplicate of a recent line
-        if norm in seen:
+        # Only skip if this exact line appeared in the recent window
+        if norm in seen_recent:
             continue
 
-        # Skip if this line is fully contained in the last kept line
-        # (handles partial overlaps like sliding windows)
-        if result:
-            last_norm = re.sub(r"\s+", " ", result[-1]).strip().lower()
-            if norm in last_norm or last_norm.endswith(norm):
-                continue
-            # Also skip if last line starts with this line (prefix overlap)
-            if last_norm.startswith(norm):
-                continue
-
         result.append(line)
-        seen.add(norm)
-        # Only keep last 10 in seen to avoid memory bloat on long videos
-        if len(seen) > 200:
-            seen = set(list(seen)[-100:])
+        seen_recent.append(norm)
+        if len(seen_recent) > window:
+            seen_recent.pop(0)
 
     return result
 
 
 def _parse_json3(raw):
-    """Parse YouTube json3 caption format to plain text, deduplicating overlapping segments."""
+    """Parse YouTube json3 caption format to plain text."""
     try:
         data = json.loads(raw)
         words = []
@@ -176,10 +174,10 @@ def _parse_json3(raw):
                 utf8 = seg.get("utf8", "")
                 if utf8 and utf8 != "\n":
                     words.append(utf8.strip())
-        # Join and split into lines for deduplication
         text = " ".join(w for w in words if w)
+        # Remove exact duplicate sentences
         lines = [l.strip() for l in text.split(".") if l.strip()]
-        deduped = _deduplicate_captions(lines)
+        deduped = _remove_exact_duplicates(lines)
         result = ". ".join(deduped)
         return re.sub(r"\s+", " ", result).strip()
     except Exception:
@@ -210,10 +208,10 @@ def convert_to_wav(input_path):
     """Convert any audio to WAV 16kHz mono using ffmpeg."""
     output_path = input_path.rsplit(".", 1)[0] + "_converted.wav"
     try:
-        subprocess.run([
-            "ffmpeg", "-y", "-i", input_path,
-            "-ar", "16000", "-ac", "1", "-f", "wav", output_path
-        ], capture_output=True, check=True)
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", input_path, "-ar", "16000", "-ac", "1", "-f", "wav", output_path],
+            capture_output=True, check=True
+        )
         return output_path
     except Exception as e:
         raise RuntimeError(f"Audio conversion failed: {e}")
