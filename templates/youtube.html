@@ -16,7 +16,6 @@
     </div>
     <p style="font-size:0.78rem;color:var(--text-muted);">
       Works with regular videos, Shorts, and videos with auto-generated captions.
-      Requires <code style="color:#a78bfa;font-family:monospace;">pip install yt-dlp</code>.
     </p>
   </div>
 
@@ -70,11 +69,49 @@
   </div>
 
   <div style="margin-top:1.25rem;">
-    <button type="submit" class="btn btn-primary btn-full">
-      <div class="spinner"></div>
-      <span class="btn-text">▶ Extract &amp; Generate</span>
+    <button type="submit" id="submitBtn" class="btn btn-primary btn-full">
+      <div class="spinner" id="btnSpinner" style="display:none;"></div>
+      <span class="btn-text" id="btnText">▶ Extract &amp; Generate</span>
     </button>
-    <p style="text-align:center;font-size:0.76rem;color:var(--text-muted);margin-top:8px;">Caption extraction is fast · Audio transcription may take 1–2 min</p>
+
+    <!-- Progress status shown after submit -->
+    <div id="progressBox" style="display:none;margin-top:1rem;padding:14px 18px;background:rgba(124,106,247,0.07);border:1px solid rgba(124,106,247,0.2);border-radius:10px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div class="spinner" style="display:inline-block;"></div>
+        <span id="statusMsg" style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">Checking for captions…</span>
+      </div>
+      <div style="font-size:0.76rem;color:var(--text-muted);" id="statusHint">This usually takes 5–30 seconds for captioned videos.</div>
+    </div>
   </div>
 </form>
+
+<script>
+(function () {
+  var form = document.querySelector('form[action="/youtube"]');
+  if (!form) return;
+
+  var stages = [
+    { msg: "Checking for captions…",          hint: "Fast path — instant if cookies.txt is set up.",         delay: 0    },
+    { msg: "Downloading audio…",               hint: "Fetching up to 10 minutes of audio.",                    delay: 4000 },
+    { msg: "Transcribing with Whisper AI…",    hint: "Running speech-to-text (medium model). ~30s for short videos.", delay: 15000},
+    { msg: "Generating content outputs…",      hint: "Building summary, highlights, social posts and more.",   delay: 50000},
+  ];
+
+  form.addEventListener('submit', function () {
+    document.getElementById('btnSpinner').style.display = 'inline-block';
+    document.getElementById('btnText').textContent      = 'Processing…';
+    document.getElementById('submitBtn').disabled       = true;
+    document.getElementById('progressBox').style.display = 'block';
+
+    stages.forEach(function (s) {
+      setTimeout(function () {
+        var msgEl  = document.getElementById('statusMsg');
+        var hintEl = document.getElementById('statusHint');
+        if (msgEl)  msgEl.textContent  = s.msg;
+        if (hintEl) hintEl.textContent = s.hint;
+      }, s.delay);
+    });
+  });
+})();
+</script>
 {% endblock %}

@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Uploads (audio files — too large for git)
+uploads/*.mp3
+uploads/*.wav
+uploads/*.m4a
+uploads/*.ogg
+uploads/*.webm
+
+# Database (local data)
+database/content.db
+
+# Cookies (sensitive)
+cookies.txt
+youtube_cookies.txt
+
+# Environment
+.env
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Outputs
+outputs/

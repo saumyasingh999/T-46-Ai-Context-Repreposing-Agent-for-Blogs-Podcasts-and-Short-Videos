@@ -101,8 +101,8 @@
     </div>
     {% if data.input_type in ['podcast','youtube'] %}
     <div class="output-block" style="margin-top:0.75rem;">
-      <div class="output-label">🎤 Transcript Preview <button class="copy-btn" onclick="copyText('transcriptText',this)">📋 Copy</button></div>
-      <div class="output-text" id="transcriptText" style="max-height:220px;overflow-y:auto;color:var(--text-secondary);">{{ data.input_preview }}{% if data.input_preview|length >= 300 %} <em style="color:var(--text-muted);">… (truncated)</em>{% endif %}</div>
+      <div class="output-label">🎤 Full Transcript <button class="copy-btn" onclick="copyText('transcriptText',this)">📋 Copy</button></div>
+      <div class="output-text" id="transcriptText" style="max-height:320px;overflow-y:auto;color:var(--text-secondary);">{{ data.full_transcript or data.input_preview }}</div>
     </div>
     {% endif %}
   </div>
