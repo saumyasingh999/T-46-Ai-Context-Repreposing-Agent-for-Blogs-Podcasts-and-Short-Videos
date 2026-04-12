@@ -5,5 +5,7 @@ spacy==3.7.2
 beautifulsoup4==4.12.2
 requests==2.31.0
 yt-dlp
+youtube-transcript-api
 openai-whisper
+faster-whisper
 numpy

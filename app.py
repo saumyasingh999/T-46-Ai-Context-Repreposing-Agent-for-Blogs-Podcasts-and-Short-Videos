@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import os
 import sys
+import uuid
+import threading
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,6 +29,11 @@ app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
 os.makedirs(config.UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(config.OUTPUT_FOLDER, exist_ok=True)
 os.makedirs('database', exist_ok=True)
+
+# ── Background job store ───────────────────────────────────────────────────
+# { job_id: { 'status': 'processing'|'done'|'error', 'result_id': int, 'error': str } }
+_jobs: dict = {}
+_jobs_lock  = threading.Lock()
 
 
 def allowed_file(filename):
@@ -157,42 +164,66 @@ def podcast():
 @app.route('/youtube', methods=['GET', 'POST'])
 def youtube():
     if request.method == 'POST':
-        yt_url = request.form.get('yt_url', '').strip()
-        tone   = request.form.get('tone', 'professional')
+        yt_url   = request.form.get('yt_url', '').strip()
+        tone     = request.form.get('tone', 'professional')
         language = request.form.get('language', 'auto')
 
         if not yt_url:
             flash('Please enter a YouTube URL.', 'error')
             return render_template('youtube.html')
 
-        try:
-            from speech.transcriber import transcribe_youtube
-            transcript, error = transcribe_youtube(yt_url, app.config['UPLOAD_FOLDER'], language=language)
+        # Start background job and immediately show progress page
+        job_id = str(uuid.uuid4())
+        with _jobs_lock:
+            _jobs[job_id] = {'status': 'processing', 'result_id': None, 'error': None}
 
-            if error:
-                flash(error, 'error')
-                return render_template('youtube.html')
+        def _process():
+            try:
+                from speech.transcriber import transcribe_youtube
+                transcript, error = transcribe_youtube(
+                    yt_url, app.config['UPLOAD_FOLDER'], language=language)
 
-            if not transcript or len(transcript.strip()) < 20:
-                flash('Could not extract text from this video. Try a video with captions.', 'error')
-                return render_template('youtube.html')
+                if error:
+                    with _jobs_lock:
+                        _jobs[job_id] = {'status': 'error', 'result_id': None, 'error': error}
+                    return
 
-            p = run_pipeline(transcript, tone)
-            result_id = save_result(
-                input_type='youtube', input_text=transcript,
-                summary=p['summary'], highlights=p['highlights'],
-                script=p['script'], social_posts=p['social_posts'],
-                keywords=p['keywords'], tone=tone,
-                hashtags=p['hashtags'], titles=p['titles'],
-                twitter_thread=p['twitter_thread'], linkedin_post=p['linkedin_post']
-            )
-            return redirect(url_for('result', result_id=result_id))
+                if not transcript or len(transcript.strip()) < 20:
+                    with _jobs_lock:
+                        _jobs[job_id] = {'status': 'error', 'result_id': None,
+                                         'error': 'Could not extract text from this video.'}
+                    return
 
-        except Exception as e:
-            flash(f'Processing error: {str(e)}', 'error')
-            return render_template('youtube.html')
+                p = run_pipeline(transcript, tone)
+                result_id = save_result(
+                    input_type='youtube', input_text=transcript,
+                    summary=p['summary'], highlights=p['highlights'],
+                    script=p['script'], social_posts=p['social_posts'],
+                    keywords=p['keywords'], tone=tone,
+                    hashtags=p['hashtags'], titles=p['titles'],
+                    twitter_thread=p['twitter_thread'], linkedin_post=p['linkedin_post']
+                )
+                with _jobs_lock:
+                    _jobs[job_id] = {'status': 'done', 'result_id': result_id, 'error': None}
+
+            except Exception as e:
+                with _jobs_lock:
+                    _jobs[job_id] = {'status': 'error', 'result_id': None, 'error': str(e)}
+
+        threading.Thread(target=_process, daemon=True).start()
+        return render_template('youtube_processing.html', job_id=job_id, yt_url=yt_url)
 
     return render_template('youtube.html')
+
+
+@app.route('/youtube/status/<job_id>')
+def youtube_status(job_id):
+    """Polled by the processing page every 2s to check job status."""
+    with _jobs_lock:
+        job = _jobs.get(job_id)
+    if not job:
+        return jsonify({'status': 'error', 'error': 'Job not found'})
+    return jsonify(job)
 
 
 @app.route('/tools', methods=['GET', 'POST'])
