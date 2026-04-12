@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Processing… — ContentAI{% endblock %}
+
+{% block extra_head %}
+<style>
+  .proc-card {
+    text-align: center;
+    padding: 3rem 2rem;
+  }
+  .big-spinner {
+    width: 56px; height: 56px;
+    border: 4px solid rgba(124,106,247,0.15);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 1.5rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .stage-list { list-style: none; padding: 0; margin: 1.5rem auto 0; max-width: 340px; text-align: left; }
+  .stage-list li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; font-size: 0.85rem; color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .stage-list li:last-child { border-bottom: none; }
+  .stage-list li.active { color: var(--text-primary); font-weight: 600; }
+  .stage-list li.done   { color: #4ade80; }
+  .stage-icon { font-size: 1rem; width: 22px; text-align: center; flex-shrink: 0; }
+  .error-box {
+    background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1.5rem;
+    font-size: 0.85rem; color: #f87171; text-align: left;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card proc-card">
+  <div class="big-spinner" id="spinner"></div>
+  <h2 style="font-size:1.2rem;margin-bottom:0.4rem;" id="mainMsg">Processing your video…</h2>
+  <p style="font-size:0.82rem;color:var(--text-muted);" id="subMsg">
+    This takes 30–60 seconds. You can leave this page open.
+  </p>
+
+  <ul class="stage-list" id="stageList">
+    <li id="s1" class="active"><span class="stage-icon">⬇️</span> Downloading audio</li>
+    <li id="s2"><span class="stage-icon">🎙️</span> Transcribing speech</li>
+    <li id="s3"><span class="stage-icon">✦</span> Generating AI outputs</li>
+    <li id="s4"><span class="stage-icon">✅</span> Done</li>
+  </ul>
+
+  <div id="errorBox" class="error-box" style="display:none;"></div>
+</div>
+
+<script>
+(function () {
+  var jobId   = {{ job_id | tojson }};
+  var elapsed = 0;
+  var stages  = [
+    { id: 's1', after: 0   },
+    { id: 's2', after: 8   },
+    { id: 's3', after: 40  },
+    { id: 's4', after: 9999 },
+  ];
+
+  function setStage(idx) {
+    stages.forEach(function (s, i) {
+      var el = document.getElementById(s.id);
+      el.className = i < idx ? 'done' : (i === idx ? 'active' : '');
+    });
+  }
+
+  function poll() {
+    fetch('/youtube/status/' + jobId)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.status === 'done') {
+          setStage(3);
+          document.getElementById('mainMsg').textContent = '✅ Done! Redirecting…';
+          document.getElementById('subMsg').textContent  = '';
+          document.getElementById('spinner').style.display = 'none';
+          window.location.href = '/result/' + data.result_id;
+          return;
+        }
+        if (data.status === 'error') {
+          document.getElementById('spinner').style.display = 'none';
+          document.getElementById('mainMsg').textContent   = 'Something went wrong';
+          document.getElementById('subMsg').textContent    = '';
+          var eb = document.getElementById('errorBox');
+          eb.style.display = 'block';
+          eb.textContent   = data.error || 'Unknown error';
+          return;
+        }
+        // still processing — update stage by elapsed time
+        elapsed += 2;
+        var stageIdx = 0;
+        for (var i = stages.length - 1; i >= 0; i--) {
+          if (elapsed >= stages[i].after) { stageIdx = i; break; }
+        }
+        setStage(stageIdx);
+        setTimeout(poll, 2000);
+      })
+      .catch(function () { setTimeout(poll, 3000); });
+  }
+
+  setTimeout(poll, 2000);
+})();
+</script>
+{% endblock %}

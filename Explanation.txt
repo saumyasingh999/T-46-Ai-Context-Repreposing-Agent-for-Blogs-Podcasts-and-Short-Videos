@@ -1,0 +1,707 @@
+================================================================================
+         AI CONTENT REPURPOSER — COMPLETE PROJECT EXPLANATION
+================================================================================
+
+PROJECT NAME   : AI Content Repurposer
+PURPOSE        : Automatically extract text from YouTube videos, blog URLs, or
+                 podcast audio files, then repurpose that content into summaries,
+                 social media posts, video scripts, hashtags, titles, Twitter
+                 threads, and LinkedIn posts — all running 100% offline on CPU,
+                 no paid API required.
+
+================================================================================
+1. PROJECT STRUCTURE
+================================================================================
+
+ai-content-repurposer/
+│
+├── app.py                  ← Main Flask application, all routes
+├── config.py               ← Paths, secret key, upload limits
+├── requirements.txt        ← All Python dependencies
+├── run.bat                 ← One-click Windows launcher
+│
+├── models/                 ← AI/NLP processing modules
+│   ├── summarizer.py           TF-IDF extractive summarization
+│   ├── highlight_extractor.py  Key sentence extraction
+│   ├── script_generator.py     Short video script builder
+│   ├── social_post_generator.py Twitter/Instagram/LinkedIn posts
+│   ├── tone_controller.py      Tone transformation (casual/professional/educational)
+│   ├── hashtag_generator.py    Keyword-to-hashtag converter
+│   ├── title_generator.py      SEO title generator
+│   ├── twitter_thread_splitter.py  Thread formatter
+│   └── blog_to_linkedin.py     Long-form LinkedIn post generator
+│
+├── nlp/                    ← Text preprocessing utilities
+│   ├── text_cleaner.py         HTML removal, URL stripping, sentence tokenization
+│   └── keyword_extractor.py    TF-IDF keyword extraction
+│
+├── speech/                 ← Audio/video transcription
+│   └── transcriber.py          YouTube download + Whisper transcription
+│
+├── database/               ← SQLite storage
+│   ├── db.py                   Init, save, retrieve results
+│   └── content.db              SQLite database file
+│
+├── templates/              ← Jinja2 HTML templates
+│   ├── base.html               Master layout (navbar, styles, dark theme)
+│   ├── index.html              Landing page
+│   ├── youtube.html            YouTube input form
+│   ├── youtube_processing.html Live progress page (polls backend)
+│   ├── blog.html               Blog/URL input form
+│   ├── podcast.html            Audio file upload form
+│   ├── result.html             Full results display (all tabs)
+│   ├── history.html            Past results list
+│   └── tools.html              Individual quick tools
+│
+└── uploads/                ← Downloaded/uploaded audio files
+
+
+================================================================================
+2. BACKEND
+================================================================================
+
+FRAMEWORK      : Flask 3.0 (Python)
+LANGUAGE       : Python 3.11
+DATABASE       : SQLite (via Python's built-in sqlite3 module)
+SERVER         : Flask development server (Werkzeug), runs on port 5000
+
+Flask handles:
+  - Routing (GET/POST for each page)
+  - File uploads (Werkzeug secure_filename)
+  - Session flash messages
+  - Jinja2 template rendering
+  - Background threading for YouTube processing (threading.Thread)
+  - JSON API endpoint (/api/process_blog, /youtube/status/<job_id>)
+
+Background Job System:
+  When a YouTube URL is submitted, Flask immediately returns a "processing" page
+  and starts the heavy work (download + transcription + pipeline) in a background
+  thread. The frontend polls /youtube/status/<job_id> every 2 seconds. When the
+  job finishes, the page auto-redirects to the result. This prevents the browser
+  from timing out or appearing frozen during the 30-60 second processing time.
+
+Database Schema (SQLite — content.db):
+  Table: results
+    id               INTEGER  Primary key
+    input_type       TEXT     'youtube' | 'blog' | 'podcast'
+    input_preview    TEXT     First 300 chars of input (for history list)
+    full_transcript  TEXT     Complete untruncated transcript/text
+    summary          TEXT     AI-generated summary
+    highlights       TEXT     JSON array of key sentences
+    script           TEXT     Short video script
+    social_posts     TEXT     JSON object {twitter, instagram, linkedin}
+    keywords         TEXT     JSON array of keywords
+    tone             TEXT     'professional' | 'casual' | 'educational'
+    hashtags         TEXT     JSON array of hashtags
+    titles           TEXT     JSON array of title suggestions
+    twitter_thread   TEXT     JSON array of tweets
+    linkedin_post    TEXT     Long-form LinkedIn post
+    created_at       TEXT     Timestamp
+
+
+================================================================================
+3. FRONTEND
+================================================================================
+
+TEMPLATING     : Jinja2 (built into Flask)
+STYLING        : Pure CSS (no framework like Bootstrap or Tailwind)
+                 Custom dark theme with CSS variables
+                 Responsive design with media queries
+JAVASCRIPT     : Vanilla JS only (no React, Vue, or jQuery)
+                 Used for: tab switching, copy buttons, form submit spinner,
+                 progress page polling (fetch API)
+
+Key UI features:
+  - Dark theme with purple accent colors
+  - Tab-based result display (Summary / Highlights / Script / Social / Thread /
+    LinkedIn / Titles / Hashtags / Keywords)
+  - Copy-to-clipboard buttons on every output
+  - Live progress indicator during YouTube processing
+  - Flash messages for errors
+  - Responsive layout (works on mobile)
+
+
+================================================================================
+4. HOW TEXT IS EXTRACTED FROM A YOUTUBE VIDEO LINK
+================================================================================
+
+File: speech/transcriber.py
+
+STEP 1 — Extract Video ID
+  The URL is parsed with a regex to extract the 11-character YouTube video ID.
+  Supports: youtube.com/watch?v=..., youtu.be/..., youtube.com/shorts/...
+
+STEP 2 — Try Captions (Fast Path)
+  Uses yt-dlp to download the subtitle file (json3 format) for the requested
+  language. This is instant (< 3 seconds) and gives 100% accurate text.
+
+  IMPORTANT: YouTube blocks unauthenticated caption downloads with HTTP 429.
+  To enable this fast path, place a cookies.txt file (exported from your browser
+  using the "Get cookies.txt LOCALLY" extension) in the project root folder.
+  Without cookies.txt, this step is skipped automatically.
+
+  Caption priority order:
+    1. Requested language (e.g. Hindi 'hi')
+    2. English 'en' fallback
+    3. Manual subtitles first, then auto-generated
+
+STEP 3 — Audio Download + Whisper (Fallback)
+  If captions are unavailable or blocked:
+
+  3a. yt-dlp downloads the audio in the lowest quality format (64kbps MP3)
+      to save time and disk space. Download is capped at 10 minutes maximum.
+      Node.js is used as the JavaScript runtime for yt-dlp's YouTube extraction.
+
+  3b. FFmpeg converts the MP3 to 16kHz mono WAV — Whisper's native format.
+      This avoids internal resampling overhead inside Whisper.
+
+  3c. faster-whisper (Whisper medium model) transcribes the audio on CPU.
+      Settings used:
+        - Model      : medium (1.5GB) — minimum for accurate Hindi/Arabic/etc.
+        - beam_size  : 1 (greedy decode — fastest)
+        - vad_filter : True with threshold=0.3, min_silence=3000ms
+                       Only skips sections with 3+ seconds of dead silence.
+                       Short pauses between sentences are preserved.
+        - task       : 'transcribe' (never translates — always original language)
+        - initial_prompt: Language-specific text to force correct script
+                          e.g. "यह हिंदी में है।" forces Devanagari for Hindi
+                          (without this, Whisper outputs Urdu/Arabic script)
+        - no_speech_threshold: 0.95 — only drops near-certain silence chunks
+        - compute_type: int8_float32 — faster than int8 on most CPUs
+        - cpu_threads : 8 — uses all available CPU cores
+
+  3d. Already-downloaded audio is reused on repeat requests (cached by video ID).
+
+  3e. The Whisper model is cached in memory after first load — no reload penalty
+      on subsequent requests.
+
+WHY MEDIUM MODEL?
+  - tiny/base models produce garbled text and wrong scripts for Hindi/Arabic
+  - small model loops/repeats for Hindi
+  - medium is the minimum model that gives accurate multilingual transcription
+  - Typical time: ~15s for English, ~45s for Hindi on an 8-core CPU
+
+LANGUAGE SUPPORT:
+  English, Hindi, Urdu, Arabic, French, German, Spanish, Portuguese, Russian,
+  Chinese, Japanese, Korean, Italian, Turkish, Bengali, Punjabi, Gujarati,
+  Marathi, Tamil, Telugu (and all other Whisper-supported languages)
+
+
+================================================================================
+5. HOW TEXT IS SUMMARIZED
+================================================================================
+
+File: models/summarizer.py
+Method: Extractive Summarization using TF-IDF
+
+This approach does NOT use a neural network or LLM. It selects the most
+important existing sentences from the text — no new text is generated.
+
+ALGORITHM:
+
+Step 1 — Clean Text
+  HTML tags, URLs, and extra whitespace are removed (nlp/text_cleaner.py).
+
+Step 2 — Sentence Tokenization
+  NLTK's sent_tokenize() splits the text into individual sentences.
+  Sentences shorter than 20 characters are discarded.
+
+Step 3 — TF-IDF Vectorization
+  Each sentence is converted to a TF-IDF vector using scikit-learn's
+  TfidfVectorizer. TF-IDF (Term Frequency-Inverse Document Frequency) measures
+  how important each word is within a sentence relative to all sentences.
+  No stop word removal — supports multilingual text.
+
+Step 4 — Sentence Scoring
+  Each sentence gets a score = sum of all its TF-IDF values.
+  Higher score = sentence contains more unique, important words.
+
+Step 5 — Position Boosting
+  First sentence score × 1.5  (introductions are usually important)
+  Last sentence score  × 1.2  (conclusions are usually important)
+
+Step 6 — Top-N Selection
+  The top 4 highest-scoring sentences are selected.
+  They are returned in their ORIGINAL ORDER (not by score) to preserve flow.
+
+CHUNKING FOR LONG TEXTS:
+  If the text exceeds 500 words, it is split into 500-word chunks.
+  Each chunk is summarized to 2 sentences.
+  All chunk summaries are merged and summarized again to 4 sentences.
+  This prevents memory issues on low-end hardware.
+
+WHY EXTRACTIVE (NOT ABSTRACTIVE)?
+  Abstractive summarization (like ChatGPT) requires large language models
+  (GPT, BART, T5) which need 4-16GB RAM and a GPU. This project runs on
+  standard 8GB RAM laptops with no GPU. TF-IDF extractive summarization
+  is fast (< 1 second), accurate, and works offline.
+
+
+================================================================================
+6. FULL AI PIPELINE (run_pipeline function in app.py)
+================================================================================
+
+After text is extracted (from YouTube, blog, or podcast), ALL of the following
+are generated automatically in sequence:
+
+  INPUT TEXT
+      │
+      ├─→ [1] chunk_and_summarize()     → Summary (TF-IDF extractive)
+      ├─→ [2] extract_highlights()      → 5 key sentences (TF-IDF + length filter)
+      ├─→ [3] extract_keywords()        → 8 keywords (TF-IDF unigrams + bigrams)
+      ├─→ [4] apply_tone(summary)       → Tone-adjusted summary
+      ├─→ [5] generate_script()         → 30-60 sec video script (Hook/Body/CTA)
+      ├─→ [6] generate_social_posts()   → Twitter, Instagram, LinkedIn posts
+      ├─→ [7] generate_reel_idea()      → Short reel concept
+      ├─→ [8] generate_hashtags()       → 20 platform-optimized hashtags
+      ├─→ [9] generate_titles()         → 10 SEO title variations
+      ├─→ [10] split_into_thread()      → Numbered Twitter/X thread
+      └─→ [11] convert_blog_to_linkedin() → Long-form LinkedIn post
+      │
+      └─→ All saved to SQLite → Redirect to result page
+
+
+================================================================================
+7. INDIVIDUAL MODULE DETAILS
+================================================================================
+
+─── HIGHLIGHT EXTRACTOR (models/highlight_extractor.py) ───────────────────────
+  Same TF-IDF approach as summarizer but with a length preference filter.
+  Sentences of 8-25 words get a 1.3x score boost (ideal for social media quotes).
+  Sentences under 8 words get 0.5x penalty (too short to be meaningful).
+  Returns top 5 sentences in original order.
+
+─── TONE CONTROLLER (models/tone_controller.py) ────────────────────────────────
+  Three tones: professional, casual, educational.
+  Uses word substitution dictionaries:
+    casual:       "utilize" → "use", "demonstrate" → "show", etc.
+    professional: "use" → "utilize", "help" → "facilitate", etc.
+    educational:  Adds "This means that" after first sentence.
+  Also provides tone-specific hooks, CTAs, and emoji sets.
+
+─── KEYWORD EXTRACTOR (nlp/keyword_extractor.py) ───────────────────────────────
+  TF-IDF with ngram_range=(1,2) — extracts both single words and two-word phrases.
+  max_features=50 limits vocabulary size for speed.
+  Falls back to frequency counting if fewer than 2 sentences.
+
+─── HASHTAG GENERATOR (models/hashtag_generator.py) ───────────────────────────
+  Converts keywords to CamelCase hashtags (#ContentMarketing).
+  Adds generic fallback hashtags if keyword count is low.
+  Returns platform-specific counts: Instagram=20, Twitter=5, LinkedIn=5, etc.
+
+─── TITLE GENERATOR (models/title_generator.py) ────────────────────────────────
+  Uses 5 template categories: Listicle, How-To, Question, Power, SEO.
+  Fills templates with the top keyword as {topic}.
+  Randomly selects 2 templates from each category for variety.
+  Returns 10 title options.
+
+─── SCRIPT GENERATOR (models/script_generator.py) ──────────────────────────────
+  Builds a structured 30-60 second script:
+    [HOOK] → [CONTEXT] → [MAIN IDEA] → [EXAMPLE] → [CALL TO ACTION]
+  Each section has tone-specific language.
+  Timestamps are included for video editing guidance.
+
+─── TWITTER THREAD SPLITTER (models/twitter_thread_splitter.py) ────────────────
+  Splits text into tweets of max 270 characters (leaves room for numbering).
+  Adds a hook tweet at the start and a CTA tweet at the end.
+  Numbers each tweet (1/8, 2/8, etc.).
+  Appends relevant hashtags to first and last tweets.
+
+─── BLOG TO LINKEDIN (models/blog_to_linkedin.py) ──────────────────────────────
+  Formats content as a LinkedIn long-form post:
+    Hook sentence → Separator line → Bullet points (→ format) →
+    Insight paragraph → Separator → CTA → Hashtags
+  Optimized for LinkedIn's "see more" cutoff (strong first 2 lines).
+
+─── TEXT CLEANER (nlp/text_cleaner.py) ─────────────────────────────────────────
+  Removes HTML tags (regex), URLs, extra whitespace.
+  Uses NLTK sent_tokenize for sentence splitting.
+  Uses NLTK word_tokenize + stopwords for keyword preprocessing.
+  NLTK data (punkt, stopwords) is auto-downloaded on first run.
+
+
+================================================================================
+8. LIBRARIES AND TECHNOLOGIES USED
+================================================================================
+
+BACKEND / PYTHON:
+  Flask 3.0              Web framework, routing, templating
+  Werkzeug               File upload handling (part of Flask)
+  SQLite3                Database (Python built-in, no server needed)
+  threading              Background job processing for YouTube
+  uuid                   Unique job IDs for background tasks
+
+NLP / TEXT PROCESSING:
+  scikit-learn 1.3.2     TfidfVectorizer, cosine_similarity
+  numpy                  Array operations for TF-IDF scoring
+  nltk 3.8.1             sent_tokenize, word_tokenize, stopwords
+  spacy 3.7.2            (installed, available for advanced NLP if needed)
+
+AUDIO / VIDEO:
+  yt-dlp                 YouTube video/audio downloader, caption extractor
+  faster-whisper 1.2.1   Optimized Whisper inference (CTranslate2 backend)
+  ctranslate2 4.7.1      Fast CPU inference engine for Whisper
+  FFmpeg                 Audio conversion (MP3 → 16kHz WAV)
+  Node.js                JavaScript runtime for yt-dlp's YouTube extraction
+
+WEB SCRAPING (Blog input):
+  requests 2.31.0        HTTP client for fetching blog URLs
+  beautifulsoup4 4.12.2  HTML parser to extract paragraph text
+
+CAPTIONS:
+  youtube-transcript-api  Fetch YouTube captions (requires cookies.txt for auth)
+  browser-cookie3         Extract browser cookies to bypass YouTube IP blocks
+
+FRONTEND:
+  Jinja2                 HTML templating (built into Flask)
+  Pure CSS               Custom dark theme, no external CSS framework
+  Vanilla JavaScript     Tab switching, copy buttons, fetch API polling
+
+
+================================================================================
+9. HOW TO RUN THE PROJECT
+================================================================================
+
+Prerequisites:
+  - Python 3.11+
+  - FFmpeg installed and in PATH
+  - Node.js installed (for yt-dlp YouTube extraction)
+
+Install dependencies:
+  pip install -r requirements.txt
+
+Run the app:
+  python app.py
+  OR double-click run.bat (Windows)
+
+Open in browser:
+  http://127.0.0.1:5000
+
+For accurate YouTube captions (optional but recommended):
+  1. Install "Get cookies.txt LOCALLY" browser extension
+  2. Go to youtube.com while logged in
+  3. Export cookies → save as cookies.txt in project root
+  4. Restart the app
+
+
+================================================================================
+10. HOW TO IMPROVE THE PROJECT
+================================================================================
+
+─── ACCURACY IMPROVEMENTS ──────────────────────────────────────────────────────
+
+1. Replace TF-IDF summarization with a transformer model
+   Use: facebook/bart-large-cnn or google/pegasus-xsum (HuggingFace)
+   Result: Abstractive summaries — generates new sentences, not just extracts.
+   Requirement: 8GB+ RAM, GPU recommended (or use quantized versions).
+
+2. Use a larger Whisper model for better transcription
+   Current: medium (1.5GB) — good for most languages
+   Better:  large-v3 (3GB) — best accuracy for Hindi, Arabic, rare languages
+   Command: Change "medium" to "large-v3" in speech/transcriber.py
+
+3. Add GPU support for Whisper
+   Change: device="cpu" → device="cuda" in WhisperModel()
+   Result: 10-20x faster transcription (seconds instead of minutes)
+   Requirement: NVIDIA GPU with CUDA drivers
+
+4. Use a real LLM for content generation
+   Replace template-based script/social post generators with:
+   - Ollama (local LLMs like Llama 3, Mistral) — free, runs offline
+   - OpenAI API (GPT-4) — paid, best quality
+   Result: Much more natural, creative, context-aware outputs
+
+─── SPEED IMPROVEMENTS ─────────────────────────────────────────────────────────
+
+5. Add Redis + Celery for proper background job queue
+   Current: Python threading (simple but not scalable)
+   Better:  Celery workers with Redis broker
+   Result:  Multiple videos processed simultaneously, job persistence
+
+6. Cache Whisper model at app startup
+   Current: Model loads on first request (~8 seconds)
+   Fix:     Pre-load model when app.py starts (add to __main__ block)
+   Result:  First request is as fast as subsequent ones
+
+7. Use faster audio format
+   Current: Downloads MP3, converts to WAV
+   Better:  Download directly as opus/webm (smaller), convert to WAV
+   Result:  Faster download, same transcription quality
+
+─── FEATURE IMPROVEMENTS ───────────────────────────────────────────────────────
+
+8. Add YouTube playlist support
+   Use yt-dlp's playlist extraction to process multiple videos at once.
+
+9. Add translation output
+   Use Whisper's task="translate" to get English translation of any language.
+   Or use Helsinki-NLP translation models (HuggingFace) for offline translation.
+
+10. Add PDF/DOCX input support
+    Use PyMuPDF (fitz) for PDF text extraction.
+    Use python-docx for Word document extraction.
+
+11. Export results to PDF/DOCX
+    Use reportlab or fpdf2 for PDF export.
+    Use python-docx for Word export.
+    Add an "Export" button on the result page.
+
+12. User authentication
+    Add Flask-Login for multi-user support.
+    Each user sees only their own history.
+    Use Flask-SQLAlchemy for better database management.
+
+13. Real-time transcription progress
+    Stream Whisper segment-by-segment output via Server-Sent Events (SSE).
+    Show live transcript appearing word by word on the processing page.
+
+14. Better Hindi/multilingual summarization
+    Current TF-IDF summarizer works on English stop words only.
+    Add language detection (langdetect library) and use language-specific
+    stop word lists for better keyword extraction in Hindi/Arabic/etc.
+
+15. Add a REST API
+    Expose all pipeline functions as JSON endpoints.
+    Allow other apps to integrate with this tool programmatically.
+
+─── DEPLOYMENT IMPROVEMENTS ────────────────────────────────────────────────────
+
+16. Deploy to production
+    Use Gunicorn as WSGI server instead of Flask dev server.
+    Use Nginx as reverse proxy.
+    Deploy on a Linux VPS (Ubuntu) for better performance.
+    Command: gunicorn -w 2 -b 0.0.0.0:5000 app:app
+
+17. Dockerize the project
+    Create a Dockerfile that includes Python, FFmpeg, Node.js, and all deps.
+    Makes deployment consistent across any machine.
+
+18. Add HTTPS
+    Use Let's Encrypt (certbot) for free SSL certificate.
+    Required for production deployment.
+
+================================================================================
+END OF DOCUMENT
+================================================================================
+
+
+================================================================================
+11. INPUT & OUTPUT LIMITS FOR EVERY FEATURE
+================================================================================
+
+NOTE: This project does NOT use LLM tokens (like GPT). All processing is done
+with TF-IDF (scikit-learn) and Whisper. Limits are measured in characters,
+words, sentences, or audio duration — not tokens.
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 1 — BLOG / TEXT INPUT
+────────────────────────────────────────────────────────────────────────────────
+  Input minimum     : 50 characters  (enforced in app.py — rejected if shorter)
+  Input maximum     : 50 MB file upload limit (config.py MAX_CONTENT_LENGTH)
+                      In practice: no hard word limit, but TF-IDF performance
+                      degrades beyond ~50,000 words. Chunking handles long texts.
+  Blog URL fetch    : Fetches all <p> tags from the page. No page size limit
+                      enforced, but requests timeout after 10 seconds.
+  Quick Tools input : 30 characters minimum (enforced in app.py)
+  API endpoint      : 50 characters minimum (enforced in /api/process_blog)
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 2 — PODCAST / AUDIO FILE INPUT
+────────────────────────────────────────────────────────────────────────────────
+  File size max     : 50 MB (config.py MAX_CONTENT_LENGTH)
+  Allowed formats   : WAV, MP3, OGG, M4A
+  Transcript minimum: 20 characters (rejected if Whisper returns less)
+  Audio duration    : No hard limit for podcast uploads (full file transcribed)
+  Model used        : Whisper medium — handles any duration but time scales
+                      linearly (~1 min audio ≈ 30s transcription on 8-core CPU)
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 3 — YOUTUBE VIDEO INPUT
+────────────────────────────────────────────────────────────────────────────────
+  URL formats       : youtube.com/watch?v=..., youtu.be/..., shorts/...
+  Audio download cap: 600 seconds = 10 minutes maximum
+                      (MAX_AUDIO_SECONDS in speech/transcriber.py)
+                      Videos longer than 10 min are truncated at 10 min.
+  Caption minimum   : 100 characters (captions shorter than this are discarded)
+  Caption minimum   : 50 characters (yt-dlp subtitle file minimum)
+  Transcript minimum: 20 characters (rejected if Whisper returns less)
+  Audio quality     : 64 kbps MP3 (sufficient for speech, smaller download)
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 4 — SUMMARIZER  (models/summarizer.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input             : Any length text (no upper limit)
+  Chunking threshold: 500 words — texts longer than this are chunked
+  Chunk size        : 500 words per chunk
+  Per-chunk output  : 2 sentences per chunk summary
+  Final output      : 4 sentences (merged from all chunk summaries)
+  Sentence minimum  : 20 characters (shorter sentences are discarded)
+  Output length     : Typically 100–400 characters depending on sentence length
+
+  Example:
+    1,000-word text  → processed as 2 chunks of 500 words
+                     → each chunk → 2 sentences
+                     → merged 4 sentences → final 4-sentence summary
+
+    10,000-word text → 20 chunks of 500 words
+                     → each chunk → 2 sentences = 40 sentences merged
+                     → final 4-sentence summary
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 5 — HIGHLIGHT EXTRACTOR  (models/highlight_extractor.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input             : Any length text
+  Output count      : 5 highlights (top 5 scored sentences)
+  Sentence minimum  : 20 characters
+  Preferred length  : 8–25 words per sentence (gets 1.3x score boost)
+  Penalty           : Sentences under 8 words get 0.5x score (too short)
+  Output per item   : Full sentence, no character truncation at extraction stage
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 6 — KEYWORD EXTRACTOR  (nlp/keyword_extractor.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input             : Any length text
+  TF-IDF vocabulary : max_features=50 (top 50 candidate terms considered)
+  N-gram range      : 1–2 words (single words and two-word phrases)
+  Output count      : 8 keywords by default
+                      Title generator uses top_n=6
+                      Twitter thread uses top_n=4
+                      Hashtag generator uses top_n=20
+  Sentence minimum  : 2 sentences required for TF-IDF (falls back to
+                      frequency counting if fewer than 2 sentences)
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 7 — HASHTAG GENERATOR  (models/hashtag_generator.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input             : Any length text + keyword list
+  Keywords used     : Up to 20 keywords converted to hashtags
+  Generic fallbacks : 6 generic hashtags added if keyword count is low
+  Total output      : 20 hashtags (generate_hashtags default)
+                      25 hashtags (hashtags_by_platform internal call)
+  Per platform:
+    Instagram       : 20 hashtags
+    Twitter/X       : 5 hashtags
+    LinkedIn        : 5 hashtags
+    YouTube         : 15 hashtags
+    TikTok          : 8 hashtags
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 8 — TITLE GENERATOR  (models/title_generator.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input             : Any length text
+  Keywords used     : Top 6 keywords (top_n=6)
+  Templates         : 5 categories × 2 random picks = up to 10 template titles
+                      + 1 first-sentence title (truncated to 80 characters)
+  Output count      : 10 titles
+  Per title max     : ~80 characters (first-sentence title is hard-capped at 80)
+                      Template titles: no hard cap, typically 40–90 characters
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 9 — VIDEO SCRIPT GENERATOR  (models/script_generator.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input — summary   : Any length (first 2 sentences used as main_idea)
+  Input — highlights: Any count (highlights[1] used as example section)
+  Main idea         : First 2 sentences of summary only
+  Example section   : highlights[1] only (second highlight)
+  Output structure  : 5 sections: HOOK / CONTEXT / MAIN IDEA / EXAMPLE / CTA
+  Output length     : ~300–600 characters total script
+  Target duration   : 30–60 seconds of spoken content
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 10 — SOCIAL POST GENERATOR  (models/social_post_generator.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input — summary   : summary[:400] used (first 400 characters only for LinkedIn)
+  Input — highlights: highlights[0], [1], [2] used
+
+  Twitter/X post:
+    Quote used      : quote[:180] — hard-capped at 180 characters
+    Hashtags        : 4 hashtags appended
+    Total output    : ~220–280 characters
+
+  Instagram post:
+    Quote used      : quote[:200] — hard-capped at 200 characters
+    Bullet points   : highlights[0][:100], [1][:100], [2][:100]
+                      Each bullet hard-capped at 100 characters
+    Total output    : ~500–700 characters
+
+  LinkedIn short post:
+    Summary used    : summary[:400] — hard-capped at 400 characters
+    Bullet points   : highlights[0][:100], [1][:100], [2][:100]
+    Total output    : ~600–900 characters
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 11 — TWITTER/X THREAD SPLITTER  (models/twitter_thread_splitter.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input             : Any length text (summary + highlights concatenated)
+  Per tweet max     : 270 characters (MAX_TWEET_LEN constant)
+                      Real Twitter limit is 280 — 10 chars reserved for numbering
+  Keywords used     : Top 4 keywords → 3 hashtags
+  Thread structure  : Tweet 1 (hook) + body tweets + Tweet N (CTA)
+  Output count      : Depends on input length
+                      Typical: 4–12 tweets for a standard summary
+  No hard limit on total thread length
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 12 — LINKEDIN LONG-FORM POST  (models/blog_to_linkedin.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input — text      : Full text (only first sentence used as hook)
+  Input — summary   : summary[:120] used for hook fallback
+  Input — highlights: highlights[:4] — first 4 highlights used as bullet points
+                      Each bullet hard-capped at 200 characters
+  Input — keywords  : keywords[:5] → 5 hashtags
+  Hook sentence     : sentences[0] only (first sentence of full text)
+  Insight block     : sentences[1] and sentences[2] only (2nd and 3rd sentences)
+  Output length     : ~600–1,200 characters total
+  LinkedIn post limit (platform): 3,000 characters — this output stays well under
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 13 — TONE CONTROLLER  (models/tone_controller.py)
+────────────────────────────────────────────────────────────────────────────────
+  Input             : Any length text
+  Output            : Same length as input (word substitution only, no truncation)
+  Word map size     : 18 casual replacements, 8 professional replacements
+  Educational mode  : Inserts "This means that" after first period only (count=1)
+  No character limits applied
+
+────────────────────────────────────────────────────────────────────────────────
+FEATURE 14 — DATABASE STORAGE  (database/db.py)
+────────────────────────────────────────────────────────────────────────────────
+  input_preview     : First 300 characters of input text (for history list)
+  full_transcript   : Complete untruncated text (no limit — stored as TEXT in SQLite)
+  summary           : Full summary stored (no truncation)
+  highlights        : JSON array — all 5 highlights stored in full
+  social_posts      : JSON object — all 3 platform posts stored in full
+  keywords          : JSON array — all keywords stored
+  hashtags          : JSON array — all hashtags stored
+  titles            : JSON array — all 10 titles stored
+  twitter_thread    : JSON array — all tweets stored
+  linkedin_post     : Full post stored (no truncation)
+  SQLite TEXT limit : 1 billion characters per field (effectively unlimited)
+
+────────────────────────────────────────────────────────────────────────────────
+QUICK REFERENCE TABLE
+────────────────────────────────────────────────────────────────────────────────
+
+  Feature                  Input Limit              Output Limit
+  ─────────────────────────────────────────────────────────────────────────────
+  Blog text input          Min 50 chars, Max 50MB   Full pipeline output
+  Podcast audio            Max 50MB file            Full transcript (no limit)
+  YouTube video            Max 10 min audio         Full transcript (no limit)
+  Summarizer               No upper limit           4 sentences (~100–400 chars)
+  Highlight extractor      No upper limit           5 sentences (full length)
+  Keyword extractor        No upper limit           8 keywords (default)
+  Hashtag generator        No upper limit           20 hashtags total
+  Title generator          No upper limit           10 titles (~40–90 chars each)
+  Script generator         Summary + highlights     ~300–600 chars total
+  Twitter/X post           summary[:400]            quote[:180] + 4 hashtags
+  Instagram post           highlights[:3]           quote[:200] + bullets[:100]
+  LinkedIn short post      summary[:400]            ~600–900 chars
+  Twitter thread           Full text                270 chars/tweet, any count
+  LinkedIn long post       highlights[:4]           ~600–1,200 chars
+  Tone controller          No limit                 Same length as input
+  DB full_transcript       No limit                 Stored in full (SQLite TEXT)
+  ─────────────────────────────────────────────────────────────────────────────
+
+================================================================================
+END OF DOCUMENT
+================================================================================

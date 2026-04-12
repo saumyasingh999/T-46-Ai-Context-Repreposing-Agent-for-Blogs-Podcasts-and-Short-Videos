@@ -14,6 +14,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             input_type TEXT NOT NULL,
             input_preview TEXT,
+            full_transcript TEXT,
             summary TEXT,
             highlights TEXT,
             script TEXT,
@@ -29,7 +30,7 @@ def init_db():
     ''')
     # Migrate existing DB — add new columns if missing
     existing = [row[1] for row in c.execute("PRAGMA table_info(results)").fetchall()]
-    for col in ['hashtags', 'titles', 'twitter_thread', 'linkedin_post']:
+    for col in ['hashtags', 'titles', 'twitter_thread', 'linkedin_post', 'full_transcript']:
         if col not in existing:
             c.execute(f"ALTER TABLE results ADD COLUMN {col} TEXT")
     conn.commit()
@@ -41,12 +42,14 @@ def save_result(input_type, input_text, summary, highlights, script, social_post
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('''
-        INSERT INTO results (input_type, input_preview, summary, highlights, script, social_posts,
-                             keywords, tone, hashtags, titles, twitter_thread, linkedin_post, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO results (input_type, input_preview, full_transcript, summary, highlights, script,
+                             social_posts, keywords, tone, hashtags, titles, twitter_thread,
+                             linkedin_post, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
         input_type,
         input_text[:300],
+        input_text,           # full text — no truncation
         summary,
         json.dumps(highlights),
         script,
