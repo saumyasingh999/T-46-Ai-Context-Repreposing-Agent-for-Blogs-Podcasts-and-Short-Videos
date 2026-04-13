@@ -1,44 +1,52 @@
 <div align="center">
 
-<!-- Animated Header Banner -->
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:6C63FF,100:00D4FF&height=200&section=header&text=AI%20Content%20Repurposer&fontSize=48&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Convert%20Blogs%20%26%20Podcasts%20→%20Viral%20Short-Form%20Content&descAlignY=60&descSize=18"/>
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0F0C29,50:302B63,100:24243e&height=220&section=header&text=🤖%20AI%20Content%20Repurposer&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=40&desc=Turn%20Blogs%20%26%20Podcasts%20into%20Viral%20Short-Form%20Content&descAlignY=62&descSize=17&descColor=a78bfa"/>
 
-<!-- Animated Typing Effect -->
+<br/>
+
 <a href="https://git.io/typing-svg">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=6C63FF&center=true&vCenter=true&random=false&width=700&lines=🎬+Generate+Short+Video+Scripts+in+Seconds;📱+Auto-Create+Social+Media+Posts;🎙️+Transcribe+Podcasts+with+AI;✨+Extract+Key+Highlights+%26+Quotes;🚀+Create+Once+→+Share+Everywhere" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=20&duration=2500&pause=800&color=A78BFA&center=true&vCenter=true&multiline=false&width=650&height=40&lines=🎬+Generate+Short+Video+Scripts+in+Seconds;📱+Auto-Create+Social+Media+Posts;🎙️+Transcribe+Podcasts+with+Whisper+AI;✨+Extract+Key+Highlights+%26+Quotes;🚀+Create+Once+→+Publish+Everywhere" alt="Typing SVG" />
 </a>
 
-<br/>
+<br/><br/>
 
-<!-- Badges -->
-![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![NLTK](https://img.shields.io/badge/NLTK-NLP-orange?style=for-the-badge&logo=python&logoColor=white)
-![Whisper](https://img.shields.io/badge/Whisper-Speech--to--Text-412991?style=for-the-badge&logo=openai&logoColor=white)
-![License](https://img.shields.io/badge/License-Academic-FF6B6B?style=for-the-badge)
-![GLA University](https://img.shields.io/badge/GLA-University-4A90D9?style=for-the-badge&logo=academia&logoColor=white)
+<img src="https://img.shields.io/badge/Python-3.9+-FFD43B?style=for-the-badge&logo=python&logoColor=306998"/>
+<img src="https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black"/>
+<img src="https://img.shields.io/badge/MongoDB-Database-00ED64?style=for-the-badge&logo=mongodb&logoColor=white"/>
+<img src="https://img.shields.io/badge/spaCy-NLP-09A3D5?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Whisper-Speech--AI-FF6B6B?style=for-the-badge&logo=openai&logoColor=white"/>
+<img src="https://img.shields.io/badge/NLTK-Text%20Processing-4CAF50?style=for-the-badge&logo=python&logoColor=white"/>
+<img src="https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge"/>
 
-<br/>
+<br/><br/>
+
+<img src="https://img.shields.io/github/stars/YOUR_USERNAME/ai-content-repurposer?style=social"/>
+&nbsp;
+<img src="https://img.shields.io/github/forks/YOUR_USERNAME/ai-content-repurposer?style=social"/>
+&nbsp;
+<img src="https://img.shields.io/github/issues/YOUR_USERNAME/ai-content-repurposer?style=social"/>
 
 </div>
+
+<br/>
 
 ---
 
 ## 📌 Table of Contents
 
-- [Overview](#-overview)
-- [Problem Statement](#-problem-statement)
-- [Solution](#-solution)
-- [Features](#-features)
-- [System Architecture](#-system-architecture)
-- [Tech Stack](#-tech-stack)
-- [Workflow](#-workflow)
-- [AI Technologies](#-ai-technologies)
-- [Installation](#-installation)
-- [Team](#-team)
-- [Success Metrics](#-success-metrics)
-- [Future Roadmap](#-future-roadmap)
+| # | Section |
+|---|---------|
+| 1 | [🚀 Overview](#-overview) |
+| 2 | [❗ Problem Statement](#-problem-statement) |
+| 3 | [💡 Solution](#-solution) |
+| 4 | [✨ Features](#-features) |
+| 5 | [🏗️ Architecture](#️-system-architecture) |
+| 6 | [⚙️ Workflow](#️-workflow) |
+| 7 | [💻 Tech Stack](#-tech-stack) |
+| 8 | [🧠 AI Technologies](#-ai-technologies) |
+| 9 | [🛠️ Installation](#️-installation) |
+| 10 | [👥 Team](#-team) |
+| 11 | [🚀 Roadmap](#-future-roadmap) |
 
 ---
 
@@ -46,59 +54,73 @@
 
 <div align="center">
 
-> **"Create Once → Share Everywhere"**
-> 
-> *The AI-powered agent that transforms your long-form content into viral short-form gold.*
+```
+╔══════════════════════════════════════════════════════════╗
+║                                                          ║
+║        " Create Once  →  Share Everywhere "              ║
+║                                                          ║
+║   Transform long-form content into platform-ready        ║
+║   short-form gold using offline open-source AI.          ║
+║                                                          ║
+╚══════════════════════════════════════════════════════════╝
+```
 
 </div>
 
-**AI Content Repurposing Agent** is an intelligent system that automatically converts **blogs & podcasts** into platform-ready content — including short video scripts, social media captions, and key highlights — using **offline open-source AI models**.
+**AI Content Repurposing Agent** is an intelligent NLP-powered system that automatically converts **blogs & podcasts** into:
 
-Built as a **Mini Project at GLA University**, this tool empowers creators to multiply their reach without multiplying their effort.
+- 🎬 **Short video scripts** (30–60 seconds)
+- 📱 **Social media posts** for Twitter, LinkedIn & Instagram
+- ⭐ **Key highlights & quotes**
+- 💬 **Platform-ready captions**
+
+It runs on **fully offline, open-source AI models** — no paid API keys required.
 
 ---
 
 ## ❗ Problem Statement
 
 ```
-Long-form content creators face a common struggle:
-```
-
-```
 📝 Blog Post (2000 words)          🎙️ Podcast (45 minutes)
         │                                    │
         ▼                                    ▼
    Hours of manual work               Manual transcription
-   to create social posts             + editing required
+   to repurpose for socials            + editing required
         │                                    │
         └──────────────┬─────────────────────┘
                        ▼
-          ❌ Valuable content goes underutilized
-          ❌ Multi-platform presence suffers
-          ❌ Time wasted on repetitive editing
+       ❌  Valuable content goes underutilized
+       ❌  Multi-platform presence suffers
+       ❌  Creator time wasted on repetitive editing
 ```
+
+Content creators, educators and marketers produce hours of long-form content — but lack the time to repurpose it for every platform.
 
 ---
 
 ## 💡 Solution
 
 ```
-  ┌─────────────────────────────────────────────────────────┐
-  │                                                         │
-  │   📄 Blog / 🎙️ Podcast                                  │
-  │           │                                             │
-  │           ▼                                             │
-  │   ┌───────────────┐                                     │
-  │   │  AI Processing │  ← NLTK + spaCy + TextRank        │
-  │   └───────┬───────┘                                     │
-  │           │                                             │
-  │     ┌─────┼─────────────┐                               │
-  │     ▼     ▼             ▼                               │
-  │  🎬 Video  📱 Social   ⭐ Key                            │
-  │  Script    Media Post  Highlights                        │
-  │                                                         │
-  │   ✅ Under 2 Minutes   ✅ 80% Usable  ✅ Any Tone        │
-  └─────────────────────────────────────────────────────────┘
+  ┌─────────────────────────────────────────────────────────────┐
+  │                                                             │
+  │   INPUT: 📄 Blog Text  ──OR──  🎙️ Podcast Audio            │
+  │                │                        │                   │
+  │                │                 Whisper / Vosk             │
+  │                │                 Speech-to-Text             │
+  │                └──────────┬─────────────┘                   │
+  │                           ▼                                 │
+  │              ┌────────────────────────┐                     │
+  │              │   🧠 AI Processing      │                     │
+  │              │  NLTK · spaCy · TextRank│                     │
+  │              └────────────┬───────────┘                     │
+  │                           │                                 │
+  │          ┌────────────────┼──────────────────┐              │
+  │          ▼                ▼                  ▼              │
+  │    🎬 Video Script   📱 Social Post    ⭐ Highlights         │
+  │    (30–60 sec)       (All Platforms)   (Key Quotes)         │
+  │                                                             │
+  │       ✅ < 2 Minutes    ✅ 80%+ Usable    ✅ 3 Tones         │
+  └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -107,38 +129,39 @@ Long-form content creators face a common struggle:
 
 <table>
 <tr>
-<td width="50%">
+<td width="50%" valign="top">
 
 ### 📝 Blog Processing
 - ✅ Accept blog text or URL input
-- ✅ Extract key information automatically
-- ✅ Generate summaries and highlights
-- ✅ Topic detection & keyword extraction
+- ✅ Auto-extract key information
+- ✅ Generate summaries & highlights
+- ✅ Keyword extraction + topic detection
 
 </td>
-<td width="50%">
+<td width="50%" valign="top">
 
 ### 🎙️ Podcast Processing
-- ✅ Upload podcast audio files
-- ✅ Convert speech to text (Whisper/Vosk)
-- ✅ Generate scripts and captions
-- ✅ Extract key quotes automatically
+- ✅ Upload `.mp3` / `.wav` audio files
+- ✅ Whisper / Vosk Speech-to-Text
+- ✅ Auto-generate scripts & captions
+- ✅ Extract key quotes & moments
 
 </td>
 </tr>
 <tr>
-<td width="50%">
+<td width="50%" valign="top">
 
-### 🤖 AI Content Generation
+### 🤖 AI Content Output
 - 🎬 Short video scripts (30–60 sec)
-- 📱 Social media posts (Twitter/LinkedIn/Instagram)
-- 💬 Platform-ready captions
-- ⭐ Key highlights & quotes
+- 📱 Twitter / LinkedIn / Instagram posts
+- 💬 Platform-optimized captions
+- ⭐ Top highlights & pull quotes
 
 </td>
-<td width="50%">
+<td width="50%" valign="top">
 
-### 🎨 Tone Customization
+### 🎨 Tone Selection
+
 | Tone | Best For |
 |------|----------|
 | 🏢 Professional | LinkedIn, B2B |
@@ -151,47 +174,76 @@ Long-form content creators face a common struggle:
 
 ---
 
-## 🏗 System Architecture
+## 🏗️ System Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     USER INTERFACE                          │
-│                    React.js Frontend                        │
-│          [Blog Input] [Audio Upload] [Tone Select]          │
-└──────────────────────────┬──────────────────────────────────┘
-                           │  REST API
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    BACKEND API LAYER                         │
-│                  Python / Node.js Server                    │
-│         [Request Handler] [File Processor] [Router]         │
-└──────────────────────────┬──────────────────────────────────┘
-                           │
-          ┌────────────────┴────────────────┐
-          ▼                                 ▼
-┌─────────────────────┐         ┌───────────────────────┐
-│  SPEECH PROCESSING  │         │    NLP PROCESSING     │
-│                     │         │                       │
-│  🎙️ Audio Input     │         │  📄 Text Input        │
-│  Whisper / Vosk     │──text──▶│  NLTK + spaCy         │
-│  Speech-to-Text     │         │  TextRank             │
-└─────────────────────┘         │  Scikit-learn         │
-                                └───────────┬───────────┘
-                                            │
-                                            ▼
-                           ┌────────────────────────────┐
-                           │  CONTENT REPURPOSING ENGINE │
-                           │                            │
-                           │  🎬 Video Script Generator │
-                           │  📱 Social Post Generator  │
-                           │  ⭐ Highlight Extractor    │
-                           └──────────────┬─────────────┘
-                                          │
-                                          ▼
-                             ┌────────────────────────┐
-                             │       DATABASE          │
-                             │   MongoDB / Local DB    │
-                             └────────────────────────┘
+╔═══════════════════════════════════════════════════════════════╗
+║                      REACT.JS FRONTEND                        ║
+║         [ Blog Input ]  [ Audio Upload ]  [ Tone Select ]     ║
+╚════════════════════════════╤══════════════════════════════════╝
+                             │  REST API
+                             ▼
+╔═══════════════════════════════════════════════════════════════╗
+║                   PYTHON / NODE.JS BACKEND                    ║
+║         [ Request Handler ]  [ File Processor ]               ║
+╚══════════════╤═════════════════════════════╤══════════════════╝
+               │                             │
+               ▼                             ▼
+╔══════════════════════╗         ╔═══════════════════════════╗
+║   SPEECH PROCESSING  ║         ║       NLP PROCESSING      ║
+║                      ║         ║                           ║
+║  🎙️ Whisper / Vosk   ║──text──▶║  NLTK · spaCy · TextRank  ║
+║  Speech-to-Text      ║         ║  Keyword & Topic Extract  ║
+╚══════════════════════╝         ╚═════════════╤═════════════╝
+                                               │
+                                               ▼
+                              ╔════════════════════════════╗
+                              ║  CONTENT REPURPOSING ENGINE ║
+                              ║  🎬 Video Script Generator  ║
+                              ║  📱 Social Post Generator   ║
+                              ║  ⭐ Highlight Extractor     ║
+                              ╚══════════════╤═════════════╝
+                                             │
+                                             ▼
+                                ╔════════════════════════╗
+                                ║   MongoDB / Local DB   ║
+                                ╚════════════════════════╝
+```
+
+---
+
+## ⚙️ Workflow
+
+```
+  USER
+   │
+   ├──── 📄 Blog Text / URL ─────────────────────────┐
+   │                                                  │
+   └──── 🎙️ Audio File ──► Whisper Speech-to-Text ───┘
+                                                      │
+                                                      ▼
+                                     ╔════════════════════════╗
+                                     ║     NLP Processing     ║
+                                     ║  • Summarization       ║
+                                     ║  • Keyword Extraction  ║
+                                     ║  • Topic Detection     ║
+                                     ╚══════════╤═════════════╝
+                                                │
+                          ┌─────────────────────┼─────────────────────┐
+                          ▼                     ▼                     ▼
+               ╔═══════════════╗     ╔═════════════════╗    ╔═══════════════╗
+               ║  🎬 Video     ║     ║  📱 Social Post  ║    ║  ⭐ Highlights ║
+               ║  Script       ║     ║  (All Platforms) ║    ║  & Quotes     ║
+               ║  30–60 sec    ║     ║  Twitter/LinkedIn║    ║  Key Moments  ║
+               ╚═══════╤═══════╝     ╚════════╤════════╝    ╚══════╤════════╝
+                       └─────────────────┬────┘                    │
+                                         └──────────────────────────┘
+                                                      │
+                                                      ▼
+                                         ╔════════════════════════╗
+                                         ║    📋 Results Panel    ║
+                                         ║   [ Copy ] [ Download ]║
+                                         ╚════════════════════════╝
 ```
 
 ---
@@ -202,51 +254,14 @@ Long-form content creators face a common struggle:
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| 🎨 **Frontend** | React.js, HTML5, CSS3, JavaScript | User Interface |
-| ⚙️ **Backend** | Python, Node.js, REST API | Server & Logic |
-| 🧠 **NLP** | NLTK, spaCy, Scikit-learn | Text Analysis |
-| 📝 **Summarization** | TextRank Algorithm | Content Ranking |
-| 🎙️ **Speech-to-Text** | OpenAI Whisper, Vosk | Audio Processing |
-| 🗄️ **Database** | MongoDB / Local Storage | Data Persistence |
+| 🎨 **Frontend** | React.js · HTML5 · CSS3 · JavaScript | User Interface |
+| ⚙️ **Backend** | Python · Node.js · REST API | Server & Business Logic |
+| 🧠 **NLP Engine** | NLTK · spaCy · Scikit-learn | Text Analysis & Processing |
+| 📝 **Summarization** | TextRank Algorithm | Graph-based Content Ranking |
+| 🎙️ **Speech-to-Text** | OpenAI Whisper · Vosk | Audio Transcription |
+| 🗄️ **Database** | MongoDB · Local Storage | Data Persistence |
 
 </div>
-
----
-
-## ⚙️ Workflow
-
-```
-  USER
-   │
-   ├──── Uploads Blog Text / URL ────────────────────┐
-   │                                                 │
-   └──── Uploads Podcast Audio ──► Speech-to-Text ──┘
-                                                     │
-                                                     ▼
-                                         ┌───────────────────┐
-                                         │   NLP Processing   │
-                                         │ ─────────────────  │
-                                         │ • Summarization    │
-                                         │ • Keyword Extract  │
-                                         │ • Topic Detection  │
-                                         └─────────┬─────────┘
-                                                   │
-                             ┌─────────────────────┼──────────────────────┐
-                             ▼                     ▼                      ▼
-                    ┌────────────────┐  ┌─────────────────┐  ┌──────────────────┐
-                    │  🎬 Video       │  │  📱 Social Media │  │  ⭐ Highlights   │
-                    │  Script        │  │  Post            │  │  & Quotes        │
-                    │  (30-60 sec)   │  │  (Platform-ready)│  │  (Key moments)   │
-                    └────────┬───────┘  └────────┬────────┘  └──────┬───────────┘
-                             │                   │                   │
-                             └─────────────────┬─┘                   │
-                                               └──────────┬──────────┘
-                                                          ▼
-                                               ┌──────────────────────┐
-                                               │    📋 Results Panel  │
-                                               │  [Copy] [Download]   │
-                                               └──────────────────────┘
-```
 
 ---
 
@@ -254,86 +269,81 @@ Long-form content creators face a common struggle:
 
 <div align="center">
 
-| 🔬 Technology | 🎯 Purpose | ⚡ Role |
-|--------------|-----------|--------|
-| **NLTK** | Natural Language Toolkit | Tokenization, POS tagging, text preprocessing |
-| **spaCy** | Industrial NLP | Named entity recognition, dependency parsing |
-| **Scikit-learn** | ML Library | TF-IDF vectorization, text ranking |
-| **TextRank** | Graph-based Algorithm | Extractive summarization |
-| **Whisper** | OpenAI Speech Model | High-accuracy audio transcription |
-| **Vosk** | Offline Speech Recognizer | Lightweight, offline STT fallback |
+| Technology | Role | What It Does |
+|-----------|------|-------------|
+| ![NLTK](https://img.shields.io/badge/NLTK-4CAF50?style=flat-square&logo=python&logoColor=white) | Text Processing | Tokenization, POS tagging, preprocessing |
+| ![spaCy](https://img.shields.io/badge/spaCy-09A3D5?style=flat-square) | Industrial NLP | Named entity recognition, dependency parsing |
+| ![Scikit](https://img.shields.io/badge/Scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white) | ML Library | TF-IDF vectorization, text ranking |
+| ![TextRank](https://img.shields.io/badge/TextRank-8B5CF6?style=flat-square) | Summarization | Graph-based extractive summarization |
+| ![Whisper](https://img.shields.io/badge/Whisper-FF6B6B?style=flat-square&logo=openai&logoColor=white) | Speech Model | High-accuracy audio transcription |
+| ![Vosk](https://img.shields.io/badge/Vosk-2563EB?style=flat-square) | Offline STT | Lightweight fallback speech recognition |
 
 </div>
 
 ---
 
-## 🛠 Installation
+## 🛠️ Installation
 
-### Prerequisites
+### ✅ Prerequisites
 
 ```bash
-# Python 3.9+
-python --version
-
-# Node.js 16+
-node --version
-
-# MongoDB (optional)
-mongod --version
+python --version   # Python 3.9+
+node --version     # Node.js 16+
+mongod --version   # MongoDB (optional)
 ```
 
-### Step 1 — Clone the Repository
+### 📦 Setup
 
 ```bash
+# 1 — Clone the repo
 git clone https://github.com/YOUR_USERNAME/ai-content-repurposer.git
 cd ai-content-repurposer
-```
 
-### Step 2 — Install Python Dependencies
-
-```bash
+# 2 — Install Python dependencies
 pip install -r requirements.txt
-```
 
-### Step 3 — Setup the Project
-
-```bash
+# 3 — Run project setup
 python setup.py
-```
 
-### Step 4 — Run the Backend
-
-```bash
+# 4 — Start the backend server
 python app.py
-```
 
-### Step 5 — Start the Frontend
-
-```bash
+# 5 — Start the frontend (open new terminal)
 cd frontend
 npm install
 npm start
 ```
 
-### Step 6 — Open in Browser
+### 🌐 Open in Browser
 
 ```
 http://localhost:3000
 ```
 
+> ⚡ That's it — the app is live and ready to use!
+
 ---
 
-## 📊 Success Metrics
+## 📊 Performance Metrics
 
 <div align="center">
 
-| 🎯 Objective | 📏 KPI | 🏆 Target |
-|-------------|--------|----------|
-| Speed | Content generation time | **< 2 minutes** |
-| Usability | User satisfaction rating | **≥ 4 / 5 stars** |
-| Quality | Usable output rate | **≥ 80%** |
+| 🎯 Goal | 📏 Measure | 🏆 Target |
+|--------|-----------|---------|
+| ⚡ Speed | Content generation time | **< 2 minutes** |
+| 😊 Usability | User satisfaction score | **≥ 4.0 / 5** |
+| ✅ Quality | Usable output rate | **≥ 80%** |
 
 </div>
+
+---
+
+## ⚠️ Limitations
+
+- 🔤 Works best with **clear English content**
+- ✏️ AI output may need **minor human editing**
+- ⏳ Large audio files may increase **processing time**
+- 🐍 Requires a stable **Python environment** for NLP models
 
 ---
 
@@ -341,79 +351,69 @@ http://localhost:3000
 
 <div align="center">
 
-| 👤 Name | 🎖️ Role | 💼 Responsibilities |
-|---------|---------|-------------------|
-| **Shailesh Gole** | 🧑‍💻 Team Lead & Backend Developer | Architecture, API, AI integration |
-| **Saumya Singh** | 🎨 Frontend Developer & NLP Support | React UI, NLP pipeline support |
-| **Urvashi Agrawal** | 🧪 Testing & Documentation | QA, README, project docs |
-
-> 🏫 Developed at **GLA University** as an academic Mini Project
+| 👤 Name | 🎖️ Role | 🔧 Responsibilities |
+|--------|--------|-------------------|
+| **Shailesh Gole** | 🧑‍💻 Team Lead · Backend Dev | Architecture, APIs, AI integration |
+| **Saumya Singh** | 🎨 Frontend Dev · NLP Support | React UI, NLP pipeline |
+| **Urvashi Agrawal** | 🧪 Testing · Documentation | QA, testing, project docs |
 
 </div>
-
----
-
-## ⚠️ Known Limitations
-
-```
-⚠️  Works best with clear English content
-⚠️  AI output may need minor human editing
-⚠️  Large audio files may increase processing time
-⚠️  Requires stable Python environment for NLP models
-```
 
 ---
 
 ## 🚀 Future Roadmap
 
 ```
-  Version 1.0 (Current) ──────────────────────────────────────┐
-  ✅ Blog text input                                           │
-  ✅ Podcast audio upload                                      │
-  ✅ Script + post + highlights generation                     │
-  ✅ Tone selection                                            │
-                                                              │
-  Version 2.0 (Planned) ──────────────────────────────────────┤
-  🔲 Multi-language support                                    │
-  🔲 Social media auto-posting                                 │
-  🔲 AI-generated highlight videos                            │
-                                                              │
-  Version 3.0 (Vision) ───────────────────────────────────────┘
-  🔲 Automatic video generation
-  🔲 Analytics dashboard
-  🔲 Team collaboration features
-  🔲 API for third-party integrations
+  ████████████████  v1.0  CURRENT  ████████████████████████████
+  ✅  Blog text & URL input
+  ✅  Podcast audio upload + transcription
+  ✅  Video script + social post + highlights generation
+  ✅  Tone selection (Professional / Educational / Casual)
+
+  ░░░░░░░░░░░░░░░░  v2.0  PLANNED  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+  🔲  Multi-language content support
+  🔲  Social media auto-posting (Twitter, LinkedIn)
+  🔲  AI-generated highlight video clips
+
+  ░░░░░░░░░░░░░░░░  v3.0  VISION   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+  🔲  Automatic full video generation
+  🔲  Analytics & engagement dashboard
+  🔲  Team collaboration workspace
+  🔲  Public API for third-party integrations
 ```
 
 ---
 
 ## 🔒 Security
 
-- ✅ File upload type & size validation
-- ✅ Secure environment variables (`.env`)
-- ✅ Protected user data handling
-- ✅ HTTPS communication support
+| ✅ Measure | Details |
+|-----------|---------|
+| File Validation | Upload type & size checks |
+| Env Variables | Secrets via `.env` — never hardcoded |
+| Data Protection | User data handled securely |
+| Transport | HTTPS communication support |
 
 ---
 
 ## 📚 References
 
-- [OpenAI Whisper](https://github.com/openai/whisper) — Speech Recognition
+- [OpenAI Whisper](https://github.com/openai/whisper) — Speech Recognition Model
 - [NLTK Documentation](https://www.nltk.org/) — Natural Language Toolkit
-- [spaCy NLP Library](https://spacy.io/) — Industrial-strength NLP
-- [TextRank Paper](https://aclanthology.org/W04-3252/) — Graph-based Summarization
+- [spaCy](https://spacy.io/) — Industrial-strength NLP Library
+- [TextRank Paper](https://aclanthology.org/W04-3252/) — Mihalcea & Tarau, 2004
 
 ---
 
 <div align="center">
 
-<!-- Footer Wave -->
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:00D4FF,100:6C63FF&height=120&section=footer"/>
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:24243e,50:302B63,100:0F0C29&height=140&section=footer&animation=fadeIn"/>
 
-**⭐ Star this repo if you found it useful!**
+### ⭐ If this project helped you, please star the repo!
 
-Made with ❤️ by Team at GLA University
+<br/>
 
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=ai-content-repurposer)
+![Made with](https://img.shields.io/badge/Made%20with-❤️%20%26%20Python-A78BFA?style=for-the-badge)
+&nbsp;
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=YOUR_USERNAME.ai-content-repurposer)
 
 </div>
