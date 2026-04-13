@@ -1,251 +1,419 @@
-# 🚀 AI Content Repurposing Agent
-### Convert Blogs & Podcasts into Short Video Scripts, Highlights & Social Media Content
+<div align="center">
 
-![AI](https://img.shields.io/badge/AI-NLP-blue)
-![Python](https://img.shields.io/badge/Python-Backend-green)
-![React](https://img.shields.io/badge/React-Frontend-blue)
-![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)
-![Status](https://img.shields.io/badge/Project-Academic-orange)
+<!-- Animated Header Banner -->
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:6C63FF,100:00D4FF&height=200&section=header&text=AI%20Content%20Repurposer&fontSize=48&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Convert%20Blogs%20%26%20Podcasts%20→%20Viral%20Short-Form%20Content&descAlignY=60&descSize=18"/>
 
----
+<!-- Animated Typing Effect -->
+<a href="https://git.io/typing-svg">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=6C63FF&center=true&vCenter=true&random=false&width=700&lines=🎬+Generate+Short+Video+Scripts+in+Seconds;📱+Auto-Create+Social+Media+Posts;🎙️+Transcribe+Podcasts+with+AI;✨+Extract+Key+Highlights+%26+Quotes;🚀+Create+Once+→+Share+Everywhere" alt="Typing SVG" />
+</a>
 
-# 📌 Project Overview
+<br/>
 
-**AI Content Repurposing Agent** is an AI-powered system that automatically converts **long-form content (blogs & podcasts)** into **short-form content** such as:
+<!-- Badges -->
+![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![NLTK](https://img.shields.io/badge/NLTK-NLP-orange?style=for-the-badge&logo=python&logoColor=white)
+![Whisper](https://img.shields.io/badge/Whisper-Speech--to--Text-412991?style=for-the-badge&logo=openai&logoColor=white)
+![License](https://img.shields.io/badge/License-Academic-FF6B6B?style=for-the-badge)
+![GLA University](https://img.shields.io/badge/GLA-University-4A90D9?style=for-the-badge&logo=academia&logoColor=white)
 
-- 🎬 Short video scripts  
-- 📱 Social media captions  
-- ✨ Key highlights & quotes  
+<br/>
 
-The system uses **offline open-source AI models** to process content and generate reusable formats.
-
-💡 **Goal:**  
-Create Once → Share Everywhere
-
-This project was developed as a **Mini Project at GLA University**.
-
----
-
-# ❗ Problem Statement
-
-Content creators, educators, and marketers frequently produce long-form content such as **blogs, podcasts, and lectures**.
-
-However, converting this content into **short-form social media content** requires **significant manual effort and time**.
-
-As a result:
-
-- Valuable content is underutilized  
-- Creators struggle to maintain multi-platform presence  
+</div>
 
 ---
 
-# 💡 Solution
+## 📌 Table of Contents
 
-The **AI Content Repurposing Agent** automatically transforms:
-
-Blogs / Podcasts  
-↓  
-AI Processing  
-↓  
-Short Video Scripts  
-Social Media Posts  
-Key Highlights  
-
-This reduces manual effort and helps creators **maximize content reach across platforms**.
+- [Overview](#-overview)
+- [Problem Statement](#-problem-statement)
+- [Solution](#-solution)
+- [Features](#-features)
+- [System Architecture](#-system-architecture)
+- [Tech Stack](#-tech-stack)
+- [Workflow](#-workflow)
+- [AI Technologies](#-ai-technologies)
+- [Installation](#-installation)
+- [Team](#-team)
+- [Success Metrics](#-success-metrics)
+- [Future Roadmap](#-future-roadmap)
 
 ---
 
-# ✨ Key Features
+## 🚀 Overview
+
+<div align="center">
+
+> **"Create Once → Share Everywhere"**
+> 
+> *The AI-powered agent that transforms your long-form content into viral short-form gold.*
+
+</div>
+
+**AI Content Repurposing Agent** is an intelligent system that automatically converts **blogs & podcasts** into platform-ready content — including short video scripts, social media captions, and key highlights — using **offline open-source AI models**.
+
+Built as a **Mini Project at GLA University**, this tool empowers creators to multiply their reach without multiplying their effort.
+
+---
+
+## ❗ Problem Statement
+
+```
+Long-form content creators face a common struggle:
+```
+
+```
+📝 Blog Post (2000 words)          🎙️ Podcast (45 minutes)
+        │                                    │
+        ▼                                    ▼
+   Hours of manual work               Manual transcription
+   to create social posts             + editing required
+        │                                    │
+        └──────────────┬─────────────────────┘
+                       ▼
+          ❌ Valuable content goes underutilized
+          ❌ Multi-platform presence suffers
+          ❌ Time wasted on repetitive editing
+```
+
+---
+
+## 💡 Solution
+
+```
+  ┌─────────────────────────────────────────────────────────┐
+  │                                                         │
+  │   📄 Blog / 🎙️ Podcast                                  │
+  │           │                                             │
+  │           ▼                                             │
+  │   ┌───────────────┐                                     │
+  │   │  AI Processing │  ← NLTK + spaCy + TextRank        │
+  │   └───────┬───────┘                                     │
+  │           │                                             │
+  │     ┌─────┼─────────────┐                               │
+  │     ▼     ▼             ▼                               │
+  │  🎬 Video  📱 Social   ⭐ Key                            │
+  │  Script    Media Post  Highlights                        │
+  │                                                         │
+  │   ✅ Under 2 Minutes   ✅ 80% Usable  ✅ Any Tone        │
+  └─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%">
 
 ### 📝 Blog Processing
-- Accept blog text or URL
-- Extract important information
-- Generate summaries and highlights
+- ✅ Accept blog text or URL input
+- ✅ Extract key information automatically
+- ✅ Generate summaries and highlights
+- ✅ Topic detection & keyword extraction
 
-### 🎙 Podcast Processing
-- Upload podcast audio
-- Convert speech to text
-- Generate scripts and captions
+</td>
+<td width="50%">
+
+### 🎙️ Podcast Processing
+- ✅ Upload podcast audio files
+- ✅ Convert speech to text (Whisper/Vosk)
+- ✅ Generate scripts and captions
+- ✅ Extract key quotes automatically
+
+</td>
+</tr>
+<tr>
+<td width="50%">
 
 ### 🤖 AI Content Generation
+- 🎬 Short video scripts (30–60 sec)
+- 📱 Social media posts (Twitter/LinkedIn/Instagram)
+- 💬 Platform-ready captions
+- ⭐ Key highlights & quotes
 
-The system generates:
+</td>
+<td width="50%">
 
-- 🎬 **Short Video Scripts (30–60 seconds)**
-- 📱 **Social Media Posts**
-- 💬 **Captions**
-- ⭐ **Key Highlights**
+### 🎨 Tone Customization
+| Tone | Best For |
+|------|----------|
+| 🏢 Professional | LinkedIn, B2B |
+| 📚 Educational | Tutorials, Courses |
+| 😄 Casual | Instagram, TikTok |
 
-### 🎨 Tone Selection
-
-Users can choose writing style:
-
-- Professional  
-- Educational  
-- Casual  
-
----
-
-# 🏗 System Architecture
-Frontend (React)
-│
-▼
-Backend API (Python / Node.js)
-│
-▼
-AI Processing Layer
-├── Speech-to-Text (Whisper / Vosk)
-├── NLP Processing (NLTK / spaCy)
-└── Content Repurposing Engine
-│
-▼
-Database (MongoDB / Local Storage)
-
+</td>
+</tr>
+</table>
 
 ---
 
-# ⚙️ Technical Workflow
+## 🏗 System Architecture
 
-1️⃣ User uploads **Blog Text or Podcast Audio**
-
-2️⃣ If audio is uploaded:
-
-3️⃣ NLP Processing performs:
-
-- Text summarization  
-- Keyword extraction  
-- Topic detection  
-
-4️⃣ Content Repurposing Engine generates:
-
-- Short video scripts  
-- Social media captions  
-- Highlights  
-
-5️⃣ Results are displayed for **copy or download**
-
----
-
-# 🧠 AI Technologies Used
-
-| Technology | Purpose |
-|--------|--------|
-| NLTK | Text processing |
-| spaCy | NLP analysis |
-| Scikit-learn | Text ranking |
-| TextRank | Summarization |
-| Whisper / Vosk | Speech-to-text |
-
----
-
-# 💻 Tech Stack
-
-## Frontend
-- React.js  
-- HTML  
-- CSS  
-- JavaScript  
-
-## Backend
-- Python  
-- Node.js  
-- REST APIs  
-
-## AI & NLP
-- NLTK  
-- spaCy  
-- Scikit-learn  
-
-## Speech Processing
-- Whisper  
-- Vosk  
-
-## Database
-- MongoDB  
-or  
-- Local Storage  
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     USER INTERFACE                          │
+│                    React.js Frontend                        │
+│          [Blog Input] [Audio Upload] [Tone Select]          │
+└──────────────────────────┬──────────────────────────────────┘
+                           │  REST API
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    BACKEND API LAYER                         │
+│                  Python / Node.js Server                    │
+│         [Request Handler] [File Processor] [Router]         │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+          ┌────────────────┴────────────────┐
+          ▼                                 ▼
+┌─────────────────────┐         ┌───────────────────────┐
+│  SPEECH PROCESSING  │         │    NLP PROCESSING     │
+│                     │         │                       │
+│  🎙️ Audio Input     │         │  📄 Text Input        │
+│  Whisper / Vosk     │──text──▶│  NLTK + spaCy         │
+│  Speech-to-Text     │         │  TextRank             │
+└─────────────────────┘         │  Scikit-learn         │
+                                └───────────┬───────────┘
+                                            │
+                                            ▼
+                           ┌────────────────────────────┐
+                           │  CONTENT REPURPOSING ENGINE │
+                           │                            │
+                           │  🎬 Video Script Generator │
+                           │  📱 Social Post Generator  │
+                           │  ⭐ Highlight Extractor    │
+                           └──────────────┬─────────────┘
+                                          │
+                                          ▼
+                             ┌────────────────────────┐
+                             │       DATABASE          │
+                             │   MongoDB / Local DB    │
+                             └────────────────────────┘
+```
 
 ---
 
-# 📊 Example User Flow
-Upload Blog / Podcast
-│
-▼
-AI Processing
-│
-▼
-Generated Content
-├── Video Script
-├── Social Media Post
-└── Highlights
-│
-▼
-Copy / Download
+## 💻 Tech Stack
+
+<div align="center">
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| 🎨 **Frontend** | React.js, HTML5, CSS3, JavaScript | User Interface |
+| ⚙️ **Backend** | Python, Node.js, REST API | Server & Logic |
+| 🧠 **NLP** | NLTK, spaCy, Scikit-learn | Text Analysis |
+| 📝 **Summarization** | TextRank Algorithm | Content Ranking |
+| 🎙️ **Speech-to-Text** | OpenAI Whisper, Vosk | Audio Processing |
+| 🗄️ **Database** | MongoDB / Local Storage | Data Persistence |
+
+</div>
 
 ---
 
-# 👥 Team Members
+## ⚙️ Workflow
 
-| Name | Role |
-|-----|------|
-| **Shailesh Gole** | Team Lead & Backend Developer |
-| **Saumya Singh** | Frontend Developer & NLP Support |
-| **Urvashi Agrawal** | Testing & Documentation |
-
----
-
-# 📈 Success Metrics
-
-| Objective | KPI |
-|--------|--------|
-| Reduce manual effort | Output generated in < 2 minutes |
-| Improve usability | User rating ≥ 4/5 |
-| Content relevance | 80% usable outputs |
-
----
-
-# 🔒 Security Measures
-
-- File upload validation
-- Secure environment variables
-- Protected user data
-- HTTPS communication
-
----
-
-# ⚠️ Limitations
-
-- Works best with **clear English content**
-- AI output may need **minor editing**
-- Large audio files may increase processing time
-
----
-
-# 🚀 Future Improvements
-
-- Automatic video generation
-- Multi-language support
-- Social media auto-posting
-- AI highlight video creation
+```
+  USER
+   │
+   ├──── Uploads Blog Text / URL ────────────────────┐
+   │                                                 │
+   └──── Uploads Podcast Audio ──► Speech-to-Text ──┘
+                                                     │
+                                                     ▼
+                                         ┌───────────────────┐
+                                         │   NLP Processing   │
+                                         │ ─────────────────  │
+                                         │ • Summarization    │
+                                         │ • Keyword Extract  │
+                                         │ • Topic Detection  │
+                                         └─────────┬─────────┘
+                                                   │
+                             ┌─────────────────────┼──────────────────────┐
+                             ▼                     ▼                      ▼
+                    ┌────────────────┐  ┌─────────────────┐  ┌──────────────────┐
+                    │  🎬 Video       │  │  📱 Social Media │  │  ⭐ Highlights   │
+                    │  Script        │  │  Post            │  │  & Quotes        │
+                    │  (30-60 sec)   │  │  (Platform-ready)│  │  (Key moments)   │
+                    └────────┬───────┘  └────────┬────────┘  └──────┬───────────┘
+                             │                   │                   │
+                             └─────────────────┬─┘                   │
+                                               └──────────┬──────────┘
+                                                          ▼
+                                               ┌──────────────────────┐
+                                               │    📋 Results Panel  │
+                                               │  [Copy] [Download]   │
+                                               └──────────────────────┘
+```
 
 ---
 
-# 📚 References
+## 🧠 AI Technologies
 
-- Whisper Speech Recognition
-- NLTK Documentation
-- spaCy NLP Library
-- TextRank Summarization Research
+<div align="center">
+
+| 🔬 Technology | 🎯 Purpose | ⚡ Role |
+|--------------|-----------|--------|
+| **NLTK** | Natural Language Toolkit | Tokenization, POS tagging, text preprocessing |
+| **spaCy** | Industrial NLP | Named entity recognition, dependency parsing |
+| **Scikit-learn** | ML Library | TF-IDF vectorization, text ranking |
+| **TextRank** | Graph-based Algorithm | Extractive summarization |
+| **Whisper** | OpenAI Speech Model | High-accuracy audio transcription |
+| **Vosk** | Offline Speech Recognizer | Lightweight, offline STT fallback |
+
+</div>
 
 ---
 
-# 📜 License
+## 🛠 Installation
 
-This project is developed for **academic purposes at GLA University**.
+### Prerequisites
+
+```bash
+# Python 3.9+
+python --version
+
+# Node.js 16+
+node --version
+
+# MongoDB (optional)
+mongod --version
+```
+
+### Step 1 — Clone the Repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/ai-content-repurposer.git
+cd ai-content-repurposer
+```
+
+### Step 2 — Install Python Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3 — Setup the Project
+
+```bash
+python setup.py
+```
+
+### Step 4 — Run the Backend
+
+```bash
+python app.py
+```
+
+### Step 5 — Start the Frontend
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+### Step 6 — Open in Browser
+
+```
+http://localhost:3000
+```
 
 ---
 
-⭐ If you find this project useful, consider **starring the repository!**
+## 📊 Success Metrics
 
-<h3><b>Note:</b>For run this install all dependencies that present in requirements then run these command.<br> <b>Python setup.py</b><br>Python app.py</h3>
+<div align="center">
 
+| 🎯 Objective | 📏 KPI | 🏆 Target |
+|-------------|--------|----------|
+| Speed | Content generation time | **< 2 minutes** |
+| Usability | User satisfaction rating | **≥ 4 / 5 stars** |
+| Quality | Usable output rate | **≥ 80%** |
+
+</div>
+
+---
+
+## 👥 Team
+
+<div align="center">
+
+| 👤 Name | 🎖️ Role | 💼 Responsibilities |
+|---------|---------|-------------------|
+| **Shailesh Gole** | 🧑‍💻 Team Lead & Backend Developer | Architecture, API, AI integration |
+| **Saumya Singh** | 🎨 Frontend Developer & NLP Support | React UI, NLP pipeline support |
+| **Urvashi Agrawal** | 🧪 Testing & Documentation | QA, README, project docs |
+
+> 🏫 Developed at **GLA University** as an academic Mini Project
+
+</div>
+
+---
+
+## ⚠️ Known Limitations
+
+```
+⚠️  Works best with clear English content
+⚠️  AI output may need minor human editing
+⚠️  Large audio files may increase processing time
+⚠️  Requires stable Python environment for NLP models
+```
+
+---
+
+## 🚀 Future Roadmap
+
+```
+  Version 1.0 (Current) ──────────────────────────────────────┐
+  ✅ Blog text input                                           │
+  ✅ Podcast audio upload                                      │
+  ✅ Script + post + highlights generation                     │
+  ✅ Tone selection                                            │
+                                                              │
+  Version 2.0 (Planned) ──────────────────────────────────────┤
+  🔲 Multi-language support                                    │
+  🔲 Social media auto-posting                                 │
+  🔲 AI-generated highlight videos                            │
+                                                              │
+  Version 3.0 (Vision) ───────────────────────────────────────┘
+  🔲 Automatic video generation
+  🔲 Analytics dashboard
+  🔲 Team collaboration features
+  🔲 API for third-party integrations
+```
+
+---
+
+## 🔒 Security
+
+- ✅ File upload type & size validation
+- ✅ Secure environment variables (`.env`)
+- ✅ Protected user data handling
+- ✅ HTTPS communication support
+
+---
+
+## 📚 References
+
+- [OpenAI Whisper](https://github.com/openai/whisper) — Speech Recognition
+- [NLTK Documentation](https://www.nltk.org/) — Natural Language Toolkit
+- [spaCy NLP Library](https://spacy.io/) — Industrial-strength NLP
+- [TextRank Paper](https://aclanthology.org/W04-3252/) — Graph-based Summarization
+
+---
+
+<div align="center">
+
+<!-- Footer Wave -->
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:00D4FF,100:6C63FF&height=120&section=footer"/>
+
+**⭐ Star this repo if you found it useful!**
+
+Made with ❤️ by Team at GLA University
+
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=ai-content-repurposer)
+
+</div>
