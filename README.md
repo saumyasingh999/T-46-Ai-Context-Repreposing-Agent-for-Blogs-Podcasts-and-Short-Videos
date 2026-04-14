@@ -338,8 +338,8 @@ Open → `http://127.0.0.1:5000`
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:c084fc,50:9b30ff,100:6a0dad&height=120&section=footer&animation=fadeIn" width="100%"/>
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=14&duration=3000&pause=1000&color=A855F7&center=true&vCenter=true&width=500&lines=Built+with+%E2%9D%A4%EF%B8%8F+at+GLA+University;Create+Once+%E2%86%92+Share+Everywhere;100%25+Offline+%C2%B7+No+API+%C2%B7+No+GPU" alt="footer typing"/>
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=14&duration=3000&pause=1000&color=A855F7&center=true&vCenter=true&width=500&lines=Built+with+%E2%9D%A4%EF%B8%8F+My+Team;Create+Once+%E2%86%92+Share+Everywhere;100%25+Offline+%C2%B7+No+API+%C2%B7+No+GPU" alt="footer typing"/>
 
-⭐ **Star this repository if you found it useful!**
+ **Thank You**
 
 </div>
