@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6a0dad,50:9b30ff,100:c084fc&height=200&section=header&text=AI%20Content%20Repurposer&fontSize=48&fontColor=ffffff&fontAlignY=38&desc=Create%20Once%20%E2%86%92%20Share%20Everywhere&descAlignY=58&descSize=18&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6a0dad,50:9b30ff,100:c084fc&height=200&section=header&text=AI%20Content%20Repurposing%20Agent&fontSize=48&fontColor=ffffff&fontAlignY=38&desc=Create%20Once%20%E2%86%92%20Share%20Everywhere&descAlignY=58&descSize=18&animation=fadeIn" width="100%"/>
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=20&duration=3000&pause=800&color=A855F7&center=true&vCenter=true&multiline=true&width=700&height=80&lines=Convert+Blogs+%7C+Podcasts+%7C+YouTube+Videos;Into+Scripts+%7C+Social+Posts+%7C+Threads+%7C+More;100%25+Offline+%C2%B7+No+API+Key+%C2%B7+No+GPU+Needed" alt="Typing Animation" />
 
