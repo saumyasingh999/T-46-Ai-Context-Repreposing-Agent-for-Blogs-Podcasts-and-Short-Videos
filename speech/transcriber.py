@@ -135,52 +135,59 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
         return None, "yt-dlp not installed. Run: pip install yt-dlp"
 
     lang = language if language and language != "auto" else None
+    errors = []  # collect per-path errors for final message
 
-    # ── Path 1: youtube-transcript-api (fastest, no dependencies) ─────────
+    # ── Path 1: youtube-transcript-api ────────────────────────────────────
     try:
-        from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
-        langs_to_try = ([lang, "en"] if lang and lang != "en" else ["en"])
-        transcript_list = None
-        try:
-            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-        except Exception:
-            pass
+        from youtube_transcript_api import YouTubeTranscriptApi
+        # Build priority list of languages to try
+        langs_to_try = []
+        if lang:
+            langs_to_try.append(lang)
+        if "en" not in langs_to_try:
+            langs_to_try.append("en")
 
-        if transcript_list:
-            fetched = None
-            # Try requested language first, then English, then any available
-            for try_lang in langs_to_try:
-                try:
-                    fetched = transcript_list.find_transcript([try_lang])
-                    break
-                except Exception:
-                    pass
-            if not fetched:
-                try:
-                    fetched = transcript_list.find_generated_transcript(langs_to_try)
-                except Exception:
-                    pass
-            if not fetched:
-                try:
-                    # grab whatever is available
-                    fetched = next(iter(transcript_list))
-                except Exception:
-                    pass
-            if fetched:
-                data = fetched.fetch()
-                text = " ".join(entry.get("text", "") for entry in data)
-                text = re.sub(r"\s+", " ", text).strip()
-                if len(text) > 100:
-                    return text, None
+        fetched_data = None
+        try:
+            # Try manual + auto captions for each language
+            fetched_data = YouTubeTranscriptApi.get_transcript(video_id, languages=langs_to_try)
+        except Exception:
+            try:
+                # Fallback: get any available transcript
+                transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+                transcript_obj  = next(iter(transcript_list))
+                fetched_data    = transcript_obj.fetch()
+            except Exception as e2:
+                errors.append(f"transcript-api: {e2}")
+
+        if fetched_data:
+            # Handle both dict-style and object-style entries (API v0.x vs v1.x)
+            parts = []
+            for entry in fetched_data:
+                if isinstance(entry, dict):
+                    parts.append(entry.get("text", ""))
+                else:
+                    parts.append(getattr(entry, "text", str(entry)))
+            text = re.sub(r"\s+", " ", " ".join(parts)).strip()
+            # Remove HTML entities and tags that sometimes appear
+            text = re.sub(r"<[^>]+>", " ", text)
+            text = text.replace("&#39;", "'").replace("&amp;", "&").replace("&quot;", '"')
+            text = re.sub(r"\s+", " ", text).strip()
+            if len(text) > 100:
+                return text, None
+            else:
+                errors.append("transcript-api: transcript too short")
     except ImportError:
-        pass  # youtube-transcript-api not installed, continue to next path
-    except Exception:
-        pass  # video has no transcripts, continue to next path
+        errors.append("transcript-api: not installed")
+    except Exception as e:
+        errors.append(f"transcript-api: {e}")
 
     # ── Path 2: captions via yt-dlp (needs cookies.txt) ───────────────────
     caption_text = _get_captions_ydlp(video_id, language)
     if caption_text and len(caption_text.strip()) > 100:
         return caption_text.strip(), None
+    else:
+        errors.append("yt-dlp captions: no cookies.txt or no captions found")
 
     # ── Path 3: audio download + Whisper ──────────────────────────────────
     try:
@@ -208,16 +215,19 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
             audio_path = _find_audio(upload_folder, video_id)
 
         if not audio_path:
-            return None, "Could not extract captions or download audio for this video."
+            errors.append("audio: download failed")
+            return None, "Could not extract text. Tried: " + " | ".join(errors)
 
         transcript = transcribe_audio(audio_path, language=language)
         if transcript and len(transcript.strip()) > 20 and not transcript.startswith("Transcription error"):
             return transcript.strip(), None
-        return None, "Transcription produced no usable text."
+        errors.append(f"whisper: {transcript}")
 
     except Exception as e:
         clean = re.sub(r'\x1b\[[0-9;]*m', '', str(e))
-        return None, f"YouTube processing error: {clean}"
+        errors.append(f"audio/whisper: {clean}")
+
+    return None, "Could not extract text from this video. Details: " + " | ".join(errors)
 
 
 def _get_captions_ydlp(video_id, language=None):
