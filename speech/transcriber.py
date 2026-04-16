@@ -27,6 +27,7 @@ import threading
 # ── Whisper model cache ────────────────────────────────────────────────────
 _whisper_models: dict = {}
 _whisper_lock   = threading.Lock()
+_USE_FASTER_WHISPER = None   # resolved once on first use
 
 MAX_AUDIO_SECONDS = 600   # cap download at 10 min
 
@@ -70,23 +71,35 @@ def has_cookies():
 
 def _get_whisper_model(lang=None):
     """
-    Use 'medium' model for all languages — only model that gives
-    accurate Hindi/Arabic/etc. script on CPU.
-    Cached after first load so subsequent requests are fast.
+    Load Whisper model — tries faster-whisper first, falls back to openai-whisper.
+    Cached after first load.
     """
-    size = "medium"
-    if size not in _whisper_models:
+    global _USE_FASTER_WHISPER
+
+    # Detect which library is available (once)
+    if _USE_FASTER_WHISPER is None:
+        try:
+            import faster_whisper  # noqa
+            _USE_FASTER_WHISPER = True
+        except ImportError:
+            _USE_FASTER_WHISPER = False
+
+    size = "medium" if lang and lang != "auto" else "base"
+
+    cache_key = f"{'fw' if _USE_FASTER_WHISPER else 'ow'}_{size}"
+    if cache_key not in _whisper_models:
         with _whisper_lock:
-            if size not in _whisper_models:
-                from faster_whisper import WhisperModel
-                _whisper_models[size] = WhisperModel(
-                    size,
-                    device="cpu",
-                    compute_type="int8_float32",
-                    cpu_threads=8,
-                    num_workers=1,
-                )
-    return _whisper_models[size]
+            if cache_key not in _whisper_models:
+                if _USE_FASTER_WHISPER:
+                    from faster_whisper import WhisperModel
+                    _whisper_models[cache_key] = WhisperModel(
+                        size, device="cpu", compute_type="int8_float32",
+                        cpu_threads=8, num_workers=1,
+                    )
+                else:
+                    import whisper
+                    _whisper_models[cache_key] = whisper.load_model(size)
+    return _whisper_models[cache_key]
 
 
 def _ydl_base_opts():
@@ -243,14 +256,10 @@ def _find_audio(folder, video_id):
 
 def transcribe_audio(audio_path, language=None):
     """
-    Transcribe audio with faster-whisper.
-    - Converts to 16kHz WAV first (Whisper's native format)
-    - base  model for English/Latin  (~4-8s)
-    - small model for Hindi/Arabic/etc (~6-12s, correct script)
-    - Models cached after first load
+    Transcribe audio — uses faster-whisper if installed, else openai-whisper.
     """
-    lang   = language if language and language != "auto" else None
-    model  = _get_whisper_model(lang)
+    lang  = language if language and language != "auto" else None
+    model = _get_whisper_model(lang)
     prompt = _LANG_PROMPTS.get(lang) if lang else None
 
     wav_path = None
@@ -261,24 +270,37 @@ def transcribe_audio(audio_path, language=None):
         src = audio_path
 
     try:
-        segments, _ = model.transcribe(
-            src,
-            language=lang,
-            beam_size=1,
-            vad_filter=True,
-            vad_parameters={
-                'threshold': 0.3,                # low = detect more as speech
-                'min_speech_duration_ms': 100,
-                'min_silence_duration_ms': 3000, # only skip 3s+ dead silence
-                'speech_pad_ms': 600,            # pad around speech edges
-            },
-            task="transcribe",
-            condition_on_previous_text=True,
-            temperature=0.0,
-            no_speech_threshold=0.95,
-            initial_prompt=prompt,
-        )
-        transcript = " ".join(seg.text.strip() for seg in segments if seg.no_speech_prob < 0.95)
+        if _USE_FASTER_WHISPER:
+            # faster-whisper API
+            segments, _ = model.transcribe(
+                src,
+                language=lang,
+                beam_size=1,
+                vad_filter=True,
+                vad_parameters={
+                    'threshold': 0.3,
+                    'min_speech_duration_ms': 100,
+                    'min_silence_duration_ms': 3000,
+                    'speech_pad_ms': 600,
+                },
+                task="transcribe",
+                condition_on_previous_text=True,
+                temperature=0.0,
+                no_speech_threshold=0.95,
+                initial_prompt=prompt,
+            )
+            transcript = " ".join(seg.text.strip() for seg in segments if seg.no_speech_prob < 0.95)
+        else:
+            # openai-whisper API
+            import whisper
+            opts = {"task": "transcribe", "fp16": False}
+            if lang:
+                opts["language"] = lang
+            if prompt:
+                opts["initial_prompt"] = prompt
+            result = model.transcribe(src, **opts)
+            transcript = result.get("text", "")
+
         return transcript.strip()
     except Exception as e:
         return f"Transcription error: {str(e)}"
