@@ -121,8 +121,9 @@ def extract_youtube_id(url):
 def transcribe_youtube(url, upload_folder="uploads", language=None):
     """
     Extract text from a YouTube video.
-    1. Captions via yt-dlp  (instant — needs cookies.txt for 429 bypass)
-    2. Audio + Whisper       (always works, slower, less accurate for Hindi)
+    1. youtube-transcript-api  (instant, no ML, no ffmpeg needed)
+    2. Captions via yt-dlp     (needs cookies.txt)
+    3. Audio + Whisper          (fallback, requires working torch/ctranslate2)
     """
     video_id = extract_youtube_id(url)
     if not video_id:
@@ -133,12 +134,55 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
     except ImportError:
         return None, "yt-dlp not installed. Run: pip install yt-dlp"
 
-    # ── Fast path: captions ────────────────────────────────────────────────
+    lang = language if language and language != "auto" else None
+
+    # ── Path 1: youtube-transcript-api (fastest, no dependencies) ─────────
+    try:
+        from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
+        langs_to_try = ([lang, "en"] if lang and lang != "en" else ["en"])
+        transcript_list = None
+        try:
+            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        except Exception:
+            pass
+
+        if transcript_list:
+            fetched = None
+            # Try requested language first, then English, then any available
+            for try_lang in langs_to_try:
+                try:
+                    fetched = transcript_list.find_transcript([try_lang])
+                    break
+                except Exception:
+                    pass
+            if not fetched:
+                try:
+                    fetched = transcript_list.find_generated_transcript(langs_to_try)
+                except Exception:
+                    pass
+            if not fetched:
+                try:
+                    # grab whatever is available
+                    fetched = next(iter(transcript_list))
+                except Exception:
+                    pass
+            if fetched:
+                data = fetched.fetch()
+                text = " ".join(entry.get("text", "") for entry in data)
+                text = re.sub(r"\s+", " ", text).strip()
+                if len(text) > 100:
+                    return text, None
+    except ImportError:
+        pass  # youtube-transcript-api not installed, continue to next path
+    except Exception:
+        pass  # video has no transcripts, continue to next path
+
+    # ── Path 2: captions via yt-dlp (needs cookies.txt) ───────────────────
     caption_text = _get_captions_ydlp(video_id, language)
     if caption_text and len(caption_text.strip()) > 100:
         return caption_text.strip(), None
 
-    # ── Slow path: audio + Whisper ─────────────────────────────────────────
+    # ── Path 3: audio download + Whisper ──────────────────────────────────
     try:
         os.makedirs(upload_folder, exist_ok=True)
         base_path  = os.path.join(upload_folder, f"yt_{video_id}")
@@ -151,7 +195,6 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
                 "format": "worstaudio/bestaudio/best",
                 "outtmpl": base_path + ".%(ext)s",
             }
-            # download_ranges and FFmpegExtractAudio both require ffmpeg
             if ffmpeg_available:
                 ydl_opts["download_ranges"] = _make_range_func(MAX_AUDIO_SECONDS)
                 ydl_opts["force_keyframes_at_cuts"] = False
@@ -165,15 +208,14 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
             audio_path = _find_audio(upload_folder, video_id)
 
         if not audio_path:
-            return None, "Audio download failed. Check your internet connection."
+            return None, "Could not extract captions or download audio for this video."
 
         transcript = transcribe_audio(audio_path, language=language)
-        if transcript and len(transcript.strip()) > 20:
+        if transcript and len(transcript.strip()) > 20 and not transcript.startswith("Transcription error"):
             return transcript.strip(), None
         return None, "Transcription produced no usable text."
 
     except Exception as e:
-        # Strip ANSI escape codes from yt-dlp error messages before showing to user
         clean = re.sub(r'\x1b\[[0-9;]*m', '', str(e))
         return None, f"YouTube processing error: {clean}"
 
@@ -259,7 +301,6 @@ def transcribe_audio(audio_path, language=None):
     Transcribe audio — uses faster-whisper if installed, else openai-whisper.
     """
     lang  = language if language and language != "auto" else None
-    model = _get_whisper_model(lang)
     prompt = _LANG_PROMPTS.get(lang) if lang else None
 
     wav_path = None
@@ -270,8 +311,12 @@ def transcribe_audio(audio_path, language=None):
         src = audio_path
 
     try:
+        model = _get_whisper_model(lang)
+    except Exception as e:
+        return f"Transcription error: Could not load Whisper model — {str(e)}"
+
+    try:
         if _USE_FASTER_WHISPER:
-            # faster-whisper API
             segments, _ = model.transcribe(
                 src,
                 language=lang,
@@ -291,7 +336,6 @@ def transcribe_audio(audio_path, language=None):
             )
             transcript = " ".join(seg.text.strip() for seg in segments if seg.no_speech_prob < 0.95)
         else:
-            # openai-whisper API
             import whisper
             opts = {"task": "transcribe", "fp16": False}
             if lang:
