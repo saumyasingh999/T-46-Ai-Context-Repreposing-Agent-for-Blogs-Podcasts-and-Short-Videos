@@ -132,15 +132,16 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
         audio_path = _find_audio(upload_folder, video_id)
 
         if not audio_path:
+            ffmpeg_available = shutil.which("ffmpeg") is not None
             ydl_opts = {
                 **_ydl_base_opts(),
                 "format": "worstaudio/bestaudio/best",
                 "outtmpl": base_path + ".%(ext)s",
-                "download_ranges": _make_range_func(MAX_AUDIO_SECONDS),
-                "force_keyframes_at_cuts": False,
             }
-            # Only add FFmpeg postprocessor if ffmpeg is available
-            if shutil.which("ffmpeg"):
+            # download_ranges and FFmpegExtractAudio both require ffmpeg
+            if ffmpeg_available:
+                ydl_opts["download_ranges"] = _make_range_func(MAX_AUDIO_SECONDS)
+                ydl_opts["force_keyframes_at_cuts"] = False
                 ydl_opts["postprocessors"] = [{
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
