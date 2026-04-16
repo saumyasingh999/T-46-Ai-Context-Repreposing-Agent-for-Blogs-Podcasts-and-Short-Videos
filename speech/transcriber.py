@@ -138,12 +138,14 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
                 "outtmpl": base_path + ".%(ext)s",
                 "download_ranges": _make_range_func(MAX_AUDIO_SECONDS),
                 "force_keyframes_at_cuts": False,
-                "postprocessors": [{
+            }
+            # Only add FFmpeg postprocessor if ffmpeg is available
+            if shutil.which("ffmpeg"):
+                ydl_opts["postprocessors"] = [{
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
                     "preferredquality": "64",
-                }],
-            }
+                }]
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.extract_info(url, download=True)
             audio_path = _find_audio(upload_folder, video_id)
@@ -157,7 +159,9 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
         return None, "Transcription produced no usable text."
 
     except Exception as e:
-        return None, f"YouTube processing error: {str(e)}"
+        # Strip ANSI escape codes from yt-dlp error messages before showing to user
+        clean = re.sub(r'\x1b\[[0-9;]*m', '', str(e))
+        return None, f"YouTube processing error: {clean}"
 
 
 def _get_captions_ydlp(video_id, language=None):
@@ -231,7 +235,7 @@ def _make_range_func(max_seconds):
 
 def _find_audio(folder, video_id):
     for f in os.listdir(folder):
-        if f.startswith(f"yt_{video_id}") and f.endswith((".mp3", ".wav", ".m4a")):
+        if f.startswith(f"yt_{video_id}") and f.endswith((".mp3", ".wav", ".m4a", ".webm", ".ogg", ".opus")):
             return os.path.join(folder, f)
     return None
 
@@ -286,6 +290,9 @@ def transcribe_audio(audio_path, language=None):
 
 
 def _to_16k_wav(input_path):
+    if not shutil.which("ffmpeg"):
+        # ffmpeg not installed — return original path, Whisper handles most formats natively
+        return input_path
     out = input_path.rsplit(".", 1)[0] + "_16k.wav"
     subprocess.run(
         ["ffmpeg", "-y", "-i", input_path,
