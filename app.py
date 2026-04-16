@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import os
 import sys
 import uuid
@@ -18,7 +19,8 @@ from models.twitter_thread_splitter import split_into_thread, format_thread_prev
 from models.blog_to_linkedin import convert_blog_to_linkedin
 from nlp.text_cleaner import clean_text
 from nlp.keyword_extractor import extract_keywords
-from database.db import init_db, save_result, get_all_results, get_result_by_id
+from database.db import (init_db, save_result, get_all_results, get_result_by_id,
+                          create_user, get_user_by_id, verify_user)
 import config
 
 app = Flask(__name__)
@@ -29,6 +31,25 @@ app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
 os.makedirs(config.UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(config.OUTPUT_FOLDER, exist_ok=True)
 os.makedirs('database', exist_ok=True)
+
+# ── Flask-Login setup ─────────────────────────────────────────────────────────
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please sign in to access this feature.'
+login_manager.login_message_category = 'error'
+
+
+class User(UserMixin):
+    def __init__(self, user_dict):
+        self.id       = user_dict['id']
+        self.username = user_dict['username']
+        self.email    = user_dict['email']
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    data = get_user_by_id(int(user_id))
+    return User(data) if data else None
 
 # ── Background job store ───────────────────────────────────────────────────
 # { job_id: { 'status': 'processing'|'done'|'error', 'result_id': int, 'error': str } }
@@ -62,6 +83,69 @@ def run_pipeline(text, tone):
 
 
 # ─────────────────────────────────────────────
+# AUTH ROUTES
+# ─────────────────────────────────────────────
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        email    = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        if not email or not password:
+            flash('Please enter both email and password.', 'error')
+            return render_template('login.html')
+        user_data = verify_user(email, password)
+        if not user_data:
+            flash('Invalid email or password.', 'error')
+            return render_template('login.html')
+        login_user(User(user_data))
+        next_page = request.args.get('next')
+        return redirect(next_page if next_page else url_for('index'))
+    return render_template('login.html')
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        email    = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        confirm  = request.form.get('confirm_password', '')
+        if not username or len(username) < 3:
+            flash('Username must be at least 3 characters.', 'error')
+            return render_template('register.html')
+        if not email or '@' not in email:
+            flash('Please enter a valid email address.', 'error')
+            return render_template('register.html')
+        if len(password) < 6:
+            flash('Password must be at least 6 characters.', 'error')
+            return render_template('register.html')
+        if password != confirm:
+            flash('Passwords do not match.', 'error')
+            return render_template('register.html')
+        user_id, error = create_user(username, email, password)
+        if error:
+            flash(error, 'error')
+            return render_template('register.html')
+        login_user(User(get_user_by_id(user_id)))
+        flash('Account created! Welcome to ContentAI.', 'success')
+        return redirect(url_for('index'))
+    return render_template('register.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been signed out.', 'success')
+    return redirect(url_for('index'))
+
+
+# ─────────────────────────────────────────────
 # ROUTES
 # ─────────────────────────────────────────────
 
@@ -75,6 +159,7 @@ def app_ui():
 
 
 @app.route('/blog', methods=['GET', 'POST'])
+@login_required
 def blog():
     if request.method == 'POST':
         text = request.form.get('blog_text', '').strip()
@@ -113,6 +198,7 @@ def blog():
 
 
 @app.route('/podcast', methods=['GET', 'POST'])
+@login_required
 def podcast():
     if request.method == 'POST':
         tone = request.form.get('tone', 'professional')
@@ -162,6 +248,7 @@ def podcast():
 
 
 @app.route('/youtube', methods=['GET', 'POST'])
+@login_required
 def youtube():
     if request.method == 'POST':
         yt_url   = request.form.get('yt_url', '').strip()
@@ -227,6 +314,7 @@ def youtube_status(job_id):
 
 
 @app.route('/tools', methods=['GET', 'POST'])
+@login_required
 def tools():
     """Quick tools page — run individual tools without saving."""
     result = None
@@ -270,6 +358,7 @@ def tools():
 
 
 @app.route('/result/<int:result_id>')
+@login_required
 def result(result_id):
     data = get_result_by_id(result_id)
     if not data:
@@ -279,12 +368,14 @@ def result(result_id):
 
 
 @app.route('/history')
+@login_required
 def history():
     results = get_all_results()
     return render_template('history.html', results=results)
 
 
 @app.route('/api/process_blog', methods=['POST'])
+@login_required
 def api_process_blog():
     payload = request.get_json()
     if not payload:

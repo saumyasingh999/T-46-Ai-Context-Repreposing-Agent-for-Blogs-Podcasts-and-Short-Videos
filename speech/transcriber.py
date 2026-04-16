@@ -27,6 +27,7 @@ import threading
 # ── Whisper model cache ────────────────────────────────────────────────────
 _whisper_models: dict = {}
 _whisper_lock   = threading.Lock()
+_USE_FASTER_WHISPER = None   # resolved once on first use
 
 MAX_AUDIO_SECONDS = 600   # cap download at 10 min
 
@@ -70,23 +71,35 @@ def has_cookies():
 
 def _get_whisper_model(lang=None):
     """
-    Use 'medium' model for all languages — only model that gives
-    accurate Hindi/Arabic/etc. script on CPU.
-    Cached after first load so subsequent requests are fast.
+    Load Whisper model — tries faster-whisper first, falls back to openai-whisper.
+    Cached after first load.
     """
-    size = "medium"
-    if size not in _whisper_models:
+    global _USE_FASTER_WHISPER
+
+    # Detect which library is available (once)
+    if _USE_FASTER_WHISPER is None:
+        try:
+            import faster_whisper  # noqa
+            _USE_FASTER_WHISPER = True
+        except ImportError:
+            _USE_FASTER_WHISPER = False
+
+    size = "medium" if lang and lang != "auto" else "base"
+
+    cache_key = f"{'fw' if _USE_FASTER_WHISPER else 'ow'}_{size}"
+    if cache_key not in _whisper_models:
         with _whisper_lock:
-            if size not in _whisper_models:
-                from faster_whisper import WhisperModel
-                _whisper_models[size] = WhisperModel(
-                    size,
-                    device="cpu",
-                    compute_type="int8_float32",
-                    cpu_threads=8,
-                    num_workers=1,
-                )
-    return _whisper_models[size]
+            if cache_key not in _whisper_models:
+                if _USE_FASTER_WHISPER:
+                    from faster_whisper import WhisperModel
+                    _whisper_models[cache_key] = WhisperModel(
+                        size, device="cpu", compute_type="int8_float32",
+                        cpu_threads=8, num_workers=1,
+                    )
+                else:
+                    import whisper
+                    _whisper_models[cache_key] = whisper.load_model(size)
+    return _whisper_models[cache_key]
 
 
 def _ydl_base_opts():
@@ -108,8 +121,9 @@ def extract_youtube_id(url):
 def transcribe_youtube(url, upload_folder="uploads", language=None):
     """
     Extract text from a YouTube video.
-    1. Captions via yt-dlp  (instant — needs cookies.txt for 429 bypass)
-    2. Audio + Whisper       (always works, slower, less accurate for Hindi)
+    1. youtube-transcript-api  (instant, no ML, no ffmpeg needed)
+    2. Captions via yt-dlp     (needs cookies.txt)
+    3. Audio + Whisper          (fallback, requires working torch/ctranslate2)
     """
     video_id = extract_youtube_id(url)
     if not video_id:
@@ -120,44 +134,113 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
     except ImportError:
         return None, "yt-dlp not installed. Run: pip install yt-dlp"
 
-    # ── Fast path: captions ────────────────────────────────────────────────
+    lang = language if language and language != "auto" else None
+    errors = []  # collect per-path errors for final message
+
+    # ── Path 1: youtube-transcript-api ────────────────────────────────────
+    try:
+        from youtube_transcript_api import YouTubeTranscriptApi
+
+        langs_to_try = []
+        if lang:
+            langs_to_try.append(lang)
+        if "en" not in langs_to_try:
+            langs_to_try.append("en")
+
+        fetched_data = None
+
+        try:
+            # v1.x: requires instantiation
+            api = YouTubeTranscriptApi()
+            transcript_list = api.list(video_id)
+            fetched_obj = None
+            for try_lang in langs_to_try:
+                try:
+                    fetched_obj = transcript_list.find_transcript([try_lang])
+                    break
+                except Exception:
+                    pass
+            if not fetched_obj:
+                fetched_obj = next(iter(transcript_list))
+            if fetched_obj:
+                fetched_data = fetched_obj.fetch()
+        except TypeError:
+            # v0.x: class method style
+            try:
+                fetched_data = YouTubeTranscriptApi.get_transcript(video_id, languages=langs_to_try)
+            except Exception:
+                tl = YouTubeTranscriptApi.list_transcripts(video_id)
+                fetched_data = next(iter(tl)).fetch()
+
+        if fetched_data:
+            parts = []
+            for entry in fetched_data:
+                if isinstance(entry, dict):
+                    parts.append(entry.get("text", ""))
+                else:
+                    parts.append(getattr(entry, "text", str(entry)))
+            text = " ".join(parts)
+            text = re.sub(r"<[^>]+>", " ", text)
+            text = text.replace("&#39;", "'").replace("&amp;", "&").replace("&quot;", '"')
+            text = re.sub(r"\s+", " ", text).strip()
+            if len(text) > 100:
+                return text, None
+            else:
+                errors.append("transcript-api: transcript too short")
+        else:
+            errors.append("transcript-api: no transcript found")
+
+    except ImportError:
+        errors.append("transcript-api: not installed")
+    except Exception as e:
+        errors.append(f"transcript-api: {e}")
+
+    # ── Path 2: captions via yt-dlp (needs cookies.txt) ───────────────────
     caption_text = _get_captions_ydlp(video_id, language)
     if caption_text and len(caption_text.strip()) > 100:
         return caption_text.strip(), None
+    else:
+        errors.append("yt-dlp captions: no cookies.txt or no captions found")
 
-    # ── Slow path: audio + Whisper ─────────────────────────────────────────
+    # ── Path 3: audio download + Whisper ──────────────────────────────────
     try:
         os.makedirs(upload_folder, exist_ok=True)
         base_path  = os.path.join(upload_folder, f"yt_{video_id}")
         audio_path = _find_audio(upload_folder, video_id)
 
         if not audio_path:
+            ffmpeg_available = shutil.which("ffmpeg") is not None
             ydl_opts = {
                 **_ydl_base_opts(),
                 "format": "worstaudio/bestaudio/best",
                 "outtmpl": base_path + ".%(ext)s",
-                "download_ranges": _make_range_func(MAX_AUDIO_SECONDS),
-                "force_keyframes_at_cuts": False,
-                "postprocessors": [{
+            }
+            if ffmpeg_available:
+                ydl_opts["download_ranges"] = _make_range_func(MAX_AUDIO_SECONDS)
+                ydl_opts["force_keyframes_at_cuts"] = False
+                ydl_opts["postprocessors"] = [{
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
                     "preferredquality": "64",
-                }],
-            }
+                }]
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.extract_info(url, download=True)
             audio_path = _find_audio(upload_folder, video_id)
 
         if not audio_path:
-            return None, "Audio download failed. Check your internet connection."
+            errors.append("audio: download failed")
+            return None, "Could not extract text. Tried: " + " | ".join(errors)
 
         transcript = transcribe_audio(audio_path, language=language)
-        if transcript and len(transcript.strip()) > 20:
+        if transcript and len(transcript.strip()) > 20 and not transcript.startswith("Transcription error"):
             return transcript.strip(), None
-        return None, "Transcription produced no usable text."
+        errors.append(f"whisper: {transcript}")
 
     except Exception as e:
-        return None, f"YouTube processing error: {str(e)}"
+        clean = re.sub(r'\x1b\[[0-9;]*m', '', str(e))
+        errors.append(f"audio/whisper: {clean}")
+
+    return None, "Could not extract text from this video. Details: " + " | ".join(errors)
 
 
 def _get_captions_ydlp(video_id, language=None):
@@ -231,21 +314,16 @@ def _make_range_func(max_seconds):
 
 def _find_audio(folder, video_id):
     for f in os.listdir(folder):
-        if f.startswith(f"yt_{video_id}") and f.endswith((".mp3", ".wav", ".m4a")):
+        if f.startswith(f"yt_{video_id}") and f.endswith((".mp3", ".wav", ".m4a", ".webm", ".ogg", ".opus")):
             return os.path.join(folder, f)
     return None
 
 
 def transcribe_audio(audio_path, language=None):
     """
-    Transcribe audio with faster-whisper.
-    - Converts to 16kHz WAV first (Whisper's native format)
-    - base  model for English/Latin  (~4-8s)
-    - small model for Hindi/Arabic/etc (~6-12s, correct script)
-    - Models cached after first load
+    Transcribe audio — uses faster-whisper if installed, else openai-whisper.
     """
-    lang   = language if language and language != "auto" else None
-    model  = _get_whisper_model(lang)
+    lang  = language if language and language != "auto" else None
     prompt = _LANG_PROMPTS.get(lang) if lang else None
 
     wav_path = None
@@ -256,24 +334,40 @@ def transcribe_audio(audio_path, language=None):
         src = audio_path
 
     try:
-        segments, _ = model.transcribe(
-            src,
-            language=lang,
-            beam_size=1,
-            vad_filter=True,
-            vad_parameters={
-                'threshold': 0.3,                # low = detect more as speech
-                'min_speech_duration_ms': 100,
-                'min_silence_duration_ms': 3000, # only skip 3s+ dead silence
-                'speech_pad_ms': 600,            # pad around speech edges
-            },
-            task="transcribe",
-            condition_on_previous_text=True,
-            temperature=0.0,
-            no_speech_threshold=0.95,
-            initial_prompt=prompt,
-        )
-        transcript = " ".join(seg.text.strip() for seg in segments if seg.no_speech_prob < 0.95)
+        model = _get_whisper_model(lang)
+    except Exception as e:
+        return f"Transcription error: Could not load Whisper model — {str(e)}"
+
+    try:
+        if _USE_FASTER_WHISPER:
+            segments, _ = model.transcribe(
+                src,
+                language=lang,
+                beam_size=1,
+                vad_filter=True,
+                vad_parameters={
+                    'threshold': 0.3,
+                    'min_speech_duration_ms': 100,
+                    'min_silence_duration_ms': 3000,
+                    'speech_pad_ms': 600,
+                },
+                task="transcribe",
+                condition_on_previous_text=True,
+                temperature=0.0,
+                no_speech_threshold=0.95,
+                initial_prompt=prompt,
+            )
+            transcript = " ".join(seg.text.strip() for seg in segments if seg.no_speech_prob < 0.95)
+        else:
+            import whisper
+            opts = {"task": "transcribe", "fp16": False}
+            if lang:
+                opts["language"] = lang
+            if prompt:
+                opts["initial_prompt"] = prompt
+            result = model.transcribe(src, **opts)
+            transcript = result.get("text", "")
+
         return transcript.strip()
     except Exception as e:
         return f"Transcription error: {str(e)}"
@@ -286,6 +380,9 @@ def transcribe_audio(audio_path, language=None):
 
 
 def _to_16k_wav(input_path):
+    if not shutil.which("ffmpeg"):
+        # ffmpeg not installed — return original path, Whisper handles most formats natively
+        return input_path
     out = input_path.rsplit(".", 1)[0] + "_16k.wav"
     subprocess.run(
         ["ffmpeg", "-y", "-i", input_path,
