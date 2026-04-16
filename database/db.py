@@ -2,6 +2,7 @@ import sqlite3
 import json
 import os
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 DB_PATH = os.path.join(os.path.dirname(__file__), 'content.db')
 
@@ -9,6 +10,18 @@ DB_PATH = os.path.join(os.path.dirname(__file__), 'content.db')
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
+
+    # ── Users table ──────────────────────────────────────────────────────────
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )
+    ''')
+
     c.execute('''
         CREATE TABLE IF NOT EXISTS results (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,3 +108,59 @@ def get_all_results():
     rows = c.fetchall()
     conn.close()
     return [dict(r) for r in rows]
+
+
+# ── Auth helpers ──────────────────────────────────────────────────────────────
+
+def create_user(username, email, password):
+    """Create a new user. Returns (user_id, None) on success or (None, error_msg)."""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    try:
+        password_hash = generate_password_hash(password)
+        c.execute(
+            'INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)',
+            (username.strip(), email.strip().lower(), password_hash,
+             datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        )
+        conn.commit()
+        user_id = c.lastrowid
+        return user_id, None
+    except sqlite3.IntegrityError as e:
+        if 'username' in str(e):
+            return None, 'Username already taken.'
+        if 'email' in str(e):
+            return None, 'An account with that email already exists.'
+        return None, 'Registration failed. Please try again.'
+    finally:
+        conn.close()
+
+
+def get_user_by_id(user_id):
+    """Return user dict or None."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+    row = c.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def get_user_by_email(email):
+    """Return user dict or None."""
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    c.execute('SELECT * FROM users WHERE email = ?', (email.strip().lower(),))
+    row = c.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def verify_user(email, password):
+    """Return user dict if credentials are valid, else None."""
+    user = get_user_by_email(email)
+    if user and check_password_hash(user['password_hash'], password):
+        return user
+    return None
