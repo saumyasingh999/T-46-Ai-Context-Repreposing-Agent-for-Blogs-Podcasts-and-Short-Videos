@@ -140,7 +140,7 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
     # ── Path 1: youtube-transcript-api ────────────────────────────────────
     try:
         from youtube_transcript_api import YouTubeTranscriptApi
-        # Build priority list of languages to try
+
         langs_to_try = []
         if lang:
             langs_to_try.append(lang)
@@ -148,28 +148,38 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
             langs_to_try.append("en")
 
         fetched_data = None
+
         try:
-            # Try manual + auto captions for each language
-            fetched_data = YouTubeTranscriptApi.get_transcript(video_id, languages=langs_to_try)
-        except Exception:
+            # v1.x: requires instantiation
+            api = YouTubeTranscriptApi()
+            transcript_list = api.list(video_id)
+            fetched_obj = None
+            for try_lang in langs_to_try:
+                try:
+                    fetched_obj = transcript_list.find_transcript([try_lang])
+                    break
+                except Exception:
+                    pass
+            if not fetched_obj:
+                fetched_obj = next(iter(transcript_list))
+            if fetched_obj:
+                fetched_data = fetched_obj.fetch()
+        except TypeError:
+            # v0.x: class method style
             try:
-                # Fallback: get any available transcript
-                transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
-                transcript_obj  = next(iter(transcript_list))
-                fetched_data    = transcript_obj.fetch()
-            except Exception as e2:
-                errors.append(f"transcript-api: {e2}")
+                fetched_data = YouTubeTranscriptApi.get_transcript(video_id, languages=langs_to_try)
+            except Exception:
+                tl = YouTubeTranscriptApi.list_transcripts(video_id)
+                fetched_data = next(iter(tl)).fetch()
 
         if fetched_data:
-            # Handle both dict-style and object-style entries (API v0.x vs v1.x)
             parts = []
             for entry in fetched_data:
                 if isinstance(entry, dict):
                     parts.append(entry.get("text", ""))
                 else:
                     parts.append(getattr(entry, "text", str(entry)))
-            text = re.sub(r"\s+", " ", " ".join(parts)).strip()
-            # Remove HTML entities and tags that sometimes appear
+            text = " ".join(parts)
             text = re.sub(r"<[^>]+>", " ", text)
             text = text.replace("&#39;", "'").replace("&amp;", "&").replace("&quot;", '"')
             text = re.sub(r"\s+", " ", text).strip()
@@ -177,6 +187,9 @@ def transcribe_youtube(url, upload_folder="uploads", language=None):
                 return text, None
             else:
                 errors.append("transcript-api: transcript too short")
+        else:
+            errors.append("transcript-api: no transcript found")
+
     except ImportError:
         errors.append("transcript-api: not installed")
     except Exception as e:
